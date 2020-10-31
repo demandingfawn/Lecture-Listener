@@ -6,10 +6,6 @@ from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
 import cloud
-import mysql.connector
-import logging
-import boto3
-from botocore.exceptions import ClientError
 
 class CreateAccountWindow(Screen):
     # vvvvv Changed to username
@@ -154,15 +150,3 @@ class MyMainApp(App):
 
 if __name__ == "__main__":
     MyMainApp().run()
-    # mydb = mysql.connector.connect(
-    #     host="lecture-listener-database.ced4pprbqpl5.us-east-2.rds.amazonaws.com",
-    #     user="admin",
-    #     password="CS4366Group",
-    #     database = 'Lecture_Listener'
-    # )
-    # mycursor = mydb.cursor()
-    # sql = "INSERT INTO user (username,email,password,font_size,font_type,font_color,background_color) VALUES (%s,%s,%s,%s,%s,%s,%s)"
-    # val = ("casey", "caseyroot97@gmail.com", "12345", "12", "Calabri", "White", "Black")
-    # mycursor.execute(sql, val)
-    #
-    # mydb.commit()
