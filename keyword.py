@@ -210,9 +210,29 @@ class keyword:
         print("\n")
         print(self.dict2)
         return
+    
+    def getTopKeywords(self): #return keywords with top 5 frequencies.
+        TopList = []
+        count = 0
+        prevFreq = 0
+        for key in list(self.dict2.keys()):
+            if count >= 5:
+                break
+            if prevFreq == 0:
+                TopList.append(key)
+                prevFreq = self.dict2[key]
+                count += 1
+            elif prevFreq == self.dict2[key]:
+                TopList.append(key)
+            else:
+                TopList.append(key)
+                prevFreq = self.dict2[key]
+                count += 1
+        return TopList
 
 aa = keyword()
 aa.openTranscript("sampletext.txt")
 aa.singleWord()
 aa.multipleWord()
 aa.printKeywords()
+print("possible keywords identified are: ", aa.getTopKeywords())
