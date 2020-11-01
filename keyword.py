@@ -1,7 +1,3 @@
-import requests
-import json
-import operator
-    
 class node: #Linked List node class
     def __init__(self,string):
         self.word = string
