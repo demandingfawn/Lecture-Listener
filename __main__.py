@@ -48,7 +48,7 @@ class LoginWindow(Screen):
     password = ObjectProperty(None)
 
     def loginBtn(self):
-        if db.validate(self.email.text, self.password.text):
+        if cloud.validate(self.email.text, self.password.text):
             MainWindow.current = self.email.text
             self.reset()
             sm.current = "main"
@@ -74,7 +74,7 @@ class MainWindow(Screen):
         sm.current = "login"
 
     def on_enter(self, *args):
-        password, name, created = db.get_user(self.current)
+        password, name, created = cloud.get_user(self.current)
         self.n.text = "Account Name: " + name
         self.email.text = "Email: " + self.current
         self.created.text = "Created On: " + created

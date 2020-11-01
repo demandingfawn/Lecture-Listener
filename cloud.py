@@ -9,7 +9,6 @@ mydb = mysql.connector.connect(
     password="CS4366Group",
     database='Lecture_Listener'
 )
-
 mycursor = mydb.cursor(buffered=True)
 
 def upload_file(file_name, object_name=None):
@@ -36,17 +35,16 @@ def download_file(object_name,file_name):
 
 def add_user(username,email,password):
 
-    sql = "SELECT * FROM user WHERE username = '%s'"
-    val = username
-    rows=mycursor.execute(sql,val)
-    #results = mycursor.fetchone()
-    print("result=",rows,"username=",val)
+    sql = "SELECT * FROM user WHERE username = '"+username+"'"
+    mycursor.execute(sql)
+    results = mycursor.fetchone()
 
-    if rows is not None:
+    if results:
 
         return 0
 
     else:
+
         sql = "INSERT INTO user (username,email,password,font_size,font_type,font_color,background_color) VALUES (%s,%s,%s,%s,%s,%s,%s)"
         val = (username, email, password, "12", "Calabri", "White", "Black")
         mycursor.execute(sql, val)
@@ -54,6 +52,21 @@ def add_user(username,email,password):
         mydb.commit()
 
         return 1
+
+
+def validate(email,password):
+
+    sql = "SELECT * FROM user WHERE email = '" +email+ "' AND password = '"+password+"'"
+    mycursor.execute(sql)
+    results = mycursor.fetchone()
+
+    if results:
+
+        return 1
+
+    else:
+
+        return 0
 
 
 def add_lecture(username,lecture_id,date,length,course,audio,transcript):
