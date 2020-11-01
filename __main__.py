@@ -17,10 +17,6 @@ class CreateAccountWindow(Screen):
         # vvvvv Changed to username
         if self.username.text != "" and self.email.text != "" and self.email.text.count("@") == 1 and self.email.text.count(".") > 0:
             if self.password != "":
-                # vvvvv created loop for unique username
-                #complete=cloud.add_user(self.email.text, self.password.text, self.username.text)
-                # while not complete:
-                #     complete = cloud.add_user(self.email.text, self.password.text, self.username.text)
                 if not cloud.add_user(self.username.text, self.email.text, self.password.text):
                     invalidForm()
 
