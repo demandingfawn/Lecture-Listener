@@ -75,6 +75,7 @@ def add_lecture(username,lecture_id,date,length,course,audio,transcript):
 
     sql = "INSERT INTO users (user_id,lecture_id,date,length,course,audio,transcript) VALUES (%s,%s,%s,%s,%s,%s,%s)"
     val = (username,lecture_id,date,length,course,audio,transcript)
+
     mycursor.execute(sql, val)
 
     mydb.commit()
@@ -84,6 +85,7 @@ def delete_lecture(username,lecture_id):
 
     sql = "DELETE FROM lecture WHERE user_id = %s AND lecture_id = %s"
     val = (username,lecture_id)
+
     mycursor.execute(sql, val)
 
     mydb.commit()
@@ -99,6 +101,7 @@ def add_timestamp(lecture_id,time):
 
 
 def delete_timestamp(lecture_id):
+  
     sql = "DELETE FROM lecture WHERE lecture_id = %s"
     val = (lecture_id)
     mycursor.execute(sql, val)
@@ -132,6 +135,7 @@ def update_course(username,lecture_id,course):
 
     sql = "UPDATE lectures SET course = %s WHERE user_id = %s AND lecture_id = %s"
     val = (course,username,lecture_id)
+
     mycursor.execute(sql, val)
 
     mydb.commit()
