@@ -73,11 +73,11 @@ class MainWindow(Screen):
     def logOut(self):
         sm.current = "login"
 
-    def on_enter(self, *args):
-        password, name, created = cloud.get_user(self.current)
-        self.n.text = "Account Name: " + name
-        self.email.text = "Email: " + self.current
-        self.created.text = "Created On: " + created
+    # def on_enter(self, *args):
+    #     password, name, created = cloud.get_user(self.current)
+    #     self.n.text = "Account Name: " + name
+    #     self.email.text = "Email: " + self.current
+    #     self.created.text = "Created On: " + created
 
 
 class HomeWindow(Screen):

@@ -9,7 +9,9 @@ mydb = mysql.connector.connect(
     password="CS4366Group",
     database='Lecture_Listener'
 )
+
 mycursor = mydb.cursor(buffered=True)
+
 
 def upload_file(file_name, object_name=None):
 
@@ -78,10 +80,27 @@ def add_lecture(username,lecture_id,date,length,course,audio,transcript):
     mydb.commit()
 
 
+def delete_lecture(username,lecture_id):
+
+    sql = "DELETE FROM lecture WHERE user_id = %s AND lecture_id = %s"
+    val = (username,lecture_id)
+    mycursor.execute(sql, val)
+
+    mydb.commit()
+
+
 def add_timestamp(lecture_id,time):
 
     sql = "INSERT INTO users (lecture_id,time) VALUES (%s,%s)"
     val = (lecture_id,time)
+    mycursor.execute(sql, val)
+
+    mydb.commit()
+
+
+def delete_timestamp(lecture_id):
+    sql = "DELETE FROM lecture WHERE lecture_id = %s"
+    val = (lecture_id)
     mycursor.execute(sql, val)
 
     mydb.commit()
@@ -109,28 +128,10 @@ def update_settings(username, font_size, font_type, font_color, background_color
     mydb.commit()
 
 
-def update_settings(username,lecture_id,course):
+def update_course(username,lecture_id,course):
 
-    sql = "UPDATE customers SET course = %s WHERE user_id = %s AND lecture_id = %s"
+    sql = "UPDATE lectures SET course = %s WHERE user_id = %s AND lecture_id = %s"
     val = (course,username,lecture_id)
-    mycursor.execute(sql, val)
-
-    mydb.commit()
-
-
-def delete_lecture(username,lecture_id):
-
-    sql = "DELETE FROM lecture WHERE user_id = %s AND lecture_id = %s"
-    val = (username,lecture_id)
-    mycursor.execute(sql, val)
-
-    mydb.commit()
-
-
-def delete_timestamp(lecture_id):
-
-    sql = "DELETE FROM lecture WHERE lecture_id = %s"
-    val = (lecture_id)
     mycursor.execute(sql, val)
 
     mydb.commit()
