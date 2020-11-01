@@ -208,6 +208,9 @@ class keyword:
         return
     
     def getTopKeywords(self): #return keywords with top 5 frequencies.
+        #sort the dictionaries in decending order with its frequecy
+        self.dict1 = dict( sorted(self.dict1.items(), key=operator.itemgetter(1),reverse=True))
+        self.dict2 = dict( sorted(self.dict2.items(), key=operator.itemgetter(1),reverse=True))
         TopList = []
         count = 0
         prevFreq = 0
