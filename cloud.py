@@ -48,7 +48,7 @@ def add_user(username,email,password):
     else:
 
         sql = "INSERT INTO user (username,email,password,font_size,font_type,font_color,background_color) VALUES (%s,%s,%s,%s,%s,%s,%s)"
-        val = (username, email, password, "12", "Calabri", "White", "Black")
+        val = (username, email, password, "Medium", "Arial", "White", "Black")
         mycursor.execute(sql, val)
 
         mydb.commit()
@@ -56,9 +56,9 @@ def add_user(username,email,password):
         return 1
 
 
-def validate(email,password):
+def validate(username,password):
 
-    sql = "SELECT * FROM user WHERE email = '" +email+ "' AND password = '"+password+"'"
+    sql = "SELECT * FROM user WHERE username = '" +username+ "' AND password = '"+password+"'"
     mycursor.execute(sql)
     results = mycursor.fetchone()
 
