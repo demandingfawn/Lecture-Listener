@@ -1,5 +1,27 @@
 import operator
 import wikipediaapi
+#befoer using it, download wikipedia api using "pip install wikipedia-api" in your terminal
+#here is also the link to the api instruction page: "https://pypi.org/project/Wikipedia-API/"
+
+#you also need to check location and name of the transcript file before using it. (for this code, it's using "sampletext.txt")
+#the method of accessing the transcript might be changed when we work on the storing system in the database.
+
+#when you use this code, you only need to use "getTopKeywords()"  to get a list of keywords,
+#   and searchWiki(word) for getting a definition of a word from Wikipedia.
+
+#if you want to check if it works, 
+#   get the sampletext.txt in the same folder where this code is in,
+#   and execute the code in the multiline comment below;
+"""
+aa = keyword()
+keywords = aa.getTopKeywords()
+print(keywords)
+for i in range(0, len(keywords)):
+    print(keywords[i])
+    print(aa.searchWiki(keywords[i]))
+    print("\n")
+"""
+
 
 class node: #Linked List node class
     def __init__(self,string):
@@ -156,7 +178,7 @@ class keyword:
         commonWords = ["new", "old", "think", "thought", "see", "saw",
                        "show", "showed", "put", "try", "trying", "tried",
                         "say", "saying", "said",
-                       "make", "made", "get", "got", "go", "went", "gone", "going", "do", "done", "did", "doing",
+                       "make", "made", "get", "got", "go", "went", "gone", "going", "do", "done", "did", "doing", "have", "had", "has", "having"
                        "one", "two", "three",
                        "same", "different", "remember",
                        "way", "reason", "time"]
@@ -269,16 +291,16 @@ class keyword:
         maxList = list(self.dict2.values())
         sumMulti = maxList[0] + maxList[1] + maxList[2]
         maximum = int((sumMulti /3 ) * 2.5)
-        print("sum : ", sumMulti)
-        print("ave : ", sumMulti/3)
-        print("maximum frequency setting: ", maximum)
+        #print("sum : ", sumMulti)
+        #print("ave : ", sumMulti/3)
+        #print("maximum frequency setting: ", maximum)
         for key in list(self.dict1.keys()):
             if self.dict1[key] > maximum or len(key) <= 1:
                 del self.dict1[key]
         maxList = list(self.dict1.values())
         sumSingle = maxList[0] + maxList[1] + maxList[2]
         divConst = round(sumSingle/sumMulti)
-        print("divConst: ", divConst)
+        #print("divConst: ", divConst)
         
         #remove adverb suffix
         #ly, y -> ily , le -> ly, ic -> ically
@@ -385,6 +407,7 @@ class keyword:
         print(self.dict2)
         print("\n")
         print(self.dict3)
+        print("\n")
         return
     
     def getTopKeywords(self):
@@ -395,7 +418,7 @@ class keyword:
         self.sortDictionary()
         self.singleWordFilter()
         self.sortDictionary()
-        self.printKeywords()
+        #self.printKeywords()
         
         TopList = []
         count = 0
@@ -433,29 +456,62 @@ class keyword:
     
     def searchWiki(self, word):
         #search word in the Wikipedia and get definition of the word if exists.
+        #it returns empty string when:
+        #       the page not exists in the Wikipedia
+        #       or the page is a reference page that starts with "~~~ may refer to:"
         
         wiki = wikipediaapi.Wikipedia('en')
         if len(word) == 0:
             return ""
         tempWord = ""
-        for i in range(0,len(word)):
-            if i == 0:
-               tempWord += word[i].upper()
-            elif word[i] == ' ':
+        loopCount = 0
+        while loopCount < len(word): 
+            if loopCount == 0:
+               tempWord += word[loopCount].upper()
+            elif word[loopCount] == ' ':
                 tempWord += ' '
-                tempWord += word[i+1]
-                i += 1
+                tempWord += word[loopCount+1].upper()
+                loopCount += 1
             else:
-                tempWord += word[i]
-        print("searching: ", tempWord)
+                tempWord += word[loopCount]
+            loopCount += 1
         if tempWord != "":
             search = wiki.page(tempWord)
-            if search.exists():
-                return search.summary
+            if search.exists():         #when it exists
+                #check if the page is for referencing list of page
+                checkDef = False
+                message = "to:"
+                loopCount = 0
+                messCount = 0
+                while True:
+                    
+                    if messCount == len (message):
+                        checkDef = True
+                        break;
+                    if loopCount > 40:
+                        break
+                    if search.summary[loopCount] == message[messCount]:
+                        loopCount += 1
+                        messCount += 1
+                    else:
+                        messCount = 0
+                        loopCount += 1
+                if checkDef:
+                    return ""
+
+                #if the page is only about the word
+                else:
+                    tempDef = ""
+                    loopCount = 0
+                    while loopCount < len(search.summary):
+                        if search.summary[loopCount] == '.':
+                            tempDef += '.'
+                            break
+                        else:
+                            tempDef += search.summary[loopCount]
+                        loopCount += 1
+                    return tempDef
             else:
                 return ""
         return ""
     
-aa = keyword()
-keywords = aa.getTopKeywords()
-print(keywords)
