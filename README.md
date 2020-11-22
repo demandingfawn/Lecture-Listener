@@ -12,6 +12,6 @@ app setting need to be functional - Dabion
 
 keyword function needs to be implemented -Dabion & Jaeseong
 
-previous lecture page needs to be better -  Casey
+previous lecture page needs to be better -  Casey (& DAbion?)
 
 markdown file research and implementing time stamps using it - Casey and Jaeseong
