@@ -1,6 +1,7 @@
 # Lecture-Listener
 Github for Senior Capstone project Lecture Listener
 
+##TODO
 audio files need to be merged into one
 
 time stamps need to be placed in the transcription
