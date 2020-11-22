@@ -6,7 +6,7 @@ audio files need to be merged into one - Bryce & Nick
 
 time stamps need to be placed in the transcription - Bryce & Nick
 
-how can we link to an audio file - Bryce & Nick
+how can we link to an audio file - Bryce & Nick & Casey & Jaesong
 
 app setting need to be functional - Dabion
 
