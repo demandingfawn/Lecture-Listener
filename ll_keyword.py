@@ -3,15 +3,15 @@ import wikipediaapi
 #befoer using it, download wikipedia api using "pip install wikipedia-api" in your terminal
 #here is also the link to the api instruction page: "https://pypi.org/project/Wikipedia-API/"
 
-#you also need to check location and name of the transcript file before using it. (for this code, it's using "sampletext.txt")
+#you also need to check location and name of the transcript file before using it. (for this code, it's using "sampleText.txt")
 #the method of accessing the transcript might be changed when we work on the storing system in the database.
 
 #when you use this code, you only need to use "getTopKeywords()"  to get a list of keywords,
 #   and searchWiki(word) for getting a definition of a word from Wikipedia.
 
-#if you want to check if it works, 
-#   get the sampletext.txt in the same folder where this code is in,
-#   and execute the code in the multiline comment below;
+#if you want to check if it works:
+#   place sampleText.txt into the same folder where this code is in,
+#   and paste the code in the multiline comment below,
 """
 aa = keyword()
 keywords = aa.getTopKeywords()
@@ -21,6 +21,7 @@ for i in range(0, len(keywords)):
     print(aa.searchWiki(keywords[i]))
     print("\n")
 """
+#   and try to run this module
 
 
 class node: #Linked List node class
@@ -412,7 +413,7 @@ class keyword:
     
     def getTopKeywords(self):
         #return most frequent keywords
-        self.openTranscript("sampletext.txt")
+        self.openTranscript("sampleText.txt")
         self.singleWord()
         self.multipleWord()
         self.sortDictionary()
