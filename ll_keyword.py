@@ -14,6 +14,7 @@ import wikipediaapi
 #   and paste the code in the multiline comment below,
 """
 aa = keyword()
+aa.openTranscript("sampleText.txt")
 keywords = aa.getTopKeywords()
 print(keywords)
 for i in range(0, len(keywords)):
@@ -22,6 +23,19 @@ for i in range(0, len(keywords)):
     print("\n")
 """
 #   and try to run this module
+
+#  if you want to use string input instead of reading txt file, use code below
+"""
+strInput = "" #put your string input here
+aa = keyword()
+aa.inputTrscString(strInput)
+keywords = aa.getTopKeywords()
+print(keywords)
+for i in range(0, len(keywords)):
+    print(keywords[i])
+    print(aa.searchWiki(keywords[i]))
+    print("\n")
+"""
 
 
 class node: #Linked List node class
@@ -96,6 +110,11 @@ class keyword:
         #open txt file in read mode
         f = open(address, 'r',encoding='utf-8')
         self.trsc = f.read()
+        return
+    
+    def inputTrscString(self,String):
+        #update transcript manually using string input
+        self.trsc = String
         return
     
     def singleWord(self):
@@ -413,7 +432,6 @@ class keyword:
     
     def getTopKeywords(self):
         #return most frequent keywords
-        self.openTranscript("sampleText.txt")
         self.singleWord()
         self.multipleWord()
         self.sortDictionary()
