@@ -1,8 +1,7 @@
 import speech_recognition as sr
 import time
-import pyaudio
 
-p = pyaudio.PyAudio()
+
 r = sr.Recognizer()
 m = sr.Microphone()
 t = time.time()
@@ -21,7 +20,7 @@ try:
             # recognize speech using Google Speech Recognition
             value = r.recognize_google(audio)
             print("{}".format(value))
-            f.write("{} ".format(value) + "{{" + "{}".format(elasped_time) + "}}\n")
+            f.write("{} ".format(value) + "{" + "{}".format(elasped_time) + "}\n")
 
         except sr.UnknownValueError:
             print("Didn't catch that")
