@@ -1,6 +1,8 @@
 # Lecture-Listener
 Github for Senior Capstone project Lecture Listener
 
+https://www.lfd.uci.edu/~gohlke/pythonlibs/
+
 # TODO
 audio files need to be merged into one - Bryce & Nick
 
