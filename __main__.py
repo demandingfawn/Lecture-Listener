@@ -107,11 +107,11 @@ class Transcript(Screen):
 
         scr = ScrollView(size_hint=(1, 0.9), size=(Screen.width, Screen.height))
         scr.do_scroll_x = False
-        scr.do_scroll_x = True
+        scr.do_scroll_y = True
         acc = Accordion(orientation ='vertical')
-        #acc.size_hint = (1, 0.8)
+        acc.size_hint = (1, None)
+        heightCal = 200
 
-        #acc.mind_space = 100
         for i in range(0, len(Keywords)):
             word = Keywords[i]
             item = AccordionItem(title= word)
@@ -124,6 +124,9 @@ class Transcript(Screen):
             temp.height = temp.texture_size[1]
             item.add_widget(temp)
             acc.add_widget(item)
+            heightCal += item.min_space
+            
+        acc.height = heightCal
         scr.add_widget(acc)
         tempScreen.add_widget(scr)
         
