@@ -108,19 +108,54 @@ def delete_timestamp(lecture_id):
 
     mydb.commit()
 
-def get_lecture_num(username):
+def get_lecture_id(username):
     sql = "SELECT lecture_id FROM lecture WHERE username = '" + username + "'"
     mycursor.execute(sql)
     results = mycursor.fetchall()
 
     mydb.commit()
+
     results.sort()
-    print(results)
     result = results[-1][0]
-    print(result)
-    result = result[(len(username)):]
-    print(result)
-    return int(result)
+    if result:
+        result = result[(len(username)):]
+    else:
+        result = 0
+    id = username + str(int(result) + 1)
+    return id
+
+def get_afile(username):
+    sql = "SELECT audio FROM lecture WHERE username = '" + username + "'"
+    mycursor.execute(sql)
+    results = mycursor.fetchall()
+
+    mydb.commit()
+
+    results.sort()
+    result = results[-1][0]
+    if result:
+        result = result[(len(username)):]
+    else:
+        result = 0
+    filename = username + str(int(result) + 1)
+    return filename
+
+
+def get_tfile(username):
+    sql = "SELECT transcript FROM lecture WHERE username = '" + username + "'"
+    mycursor.execute(sql)
+    results = mycursor.fetchall()
+
+    mydb.commit()
+
+    results.sort()
+    result = results[-1][0]
+    if result:
+        result = result[(len(username)):]
+    else:
+        result = 0
+    filename = username + str(int(result) + 1)
+    return filename
 
 def get_lectures(username):
     sql = "SELECT date,course,length,lecture_id,audio,transcript FROM lecture WHERE username = '" + username + "'"

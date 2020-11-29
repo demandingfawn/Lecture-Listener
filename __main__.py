@@ -124,10 +124,12 @@ class HomeWindow(Screen):
         # add go-back button to the screen
         class ExitButton(Button):
             def on_release(self):
-                lecture_id = user.username + str(cloud.get_lecture_num(user.username) + 1)
+                lecture_id = cloud.get_lecture_id(user.username)
                 date = datetime.today().strftime('%Y-%m-%d')
                 length = HomeWindow.LectureLength.CalcLength()
-                cloud.add_lecture(user.username,lecture_id,date,length,None,None,None)
+                afile = cloud.get_afile(user.username)
+                tfile = cloud.get_tfile(user.username)
+                cloud.add_lecture(user.username,lecture_id,date,length,None,afile,tfile)
                 sm.current = "home"
                 sm.transition.direction = "right"
                 sm.remove_widget(sm.get_screen("ll"))
