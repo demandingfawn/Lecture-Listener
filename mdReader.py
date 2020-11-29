@@ -10,6 +10,8 @@
 #   and link timestamp into the place with same order
 #   (For example, 3rd timestamp in the .md file need to be connected to the 3rd place of timestamp in the transcript)
 
+# the sample timestamp list is also posted with name "123456.md"
+
 class mdReader:
     
     def __init__(self):
