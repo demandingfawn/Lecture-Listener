@@ -18,6 +18,11 @@ from kivy.uix.boxlayout import BoxLayout
 import cloud
 import ll_keyword as KS
 
+class user:
+    username = None
+    def init(username):
+        user.username = username
+
 class CreateAccountWindow(Screen):
     username = ObjectProperty(None)
     email = ObjectProperty(None)
@@ -53,6 +58,7 @@ class LoginWindow(Screen):
     password = ObjectProperty(None)
 
     def loginBtn(self):
+        user.init(self.username.text)
         if cloud.validate(self.username.text, self.password.text):
             self.reset()
             sm.current = "home"
@@ -84,12 +90,7 @@ class HomeWindow(Screen):
         scr.do_scroll_y = True
 
         #get list of lecture recordings (title, record date, running time)
-        lectureList = ("cal I", "history II", "Physics II", "Assembly Language",
-                       "cal I", "history II", "Physics II", "Assembly Language")
-        dateList = ("11/21/2019", "10/28/2019", "06/06/2019", "05/05/2019",
-                    "11/21/2019", "10/28/2019", "06/06/2019", "05/05/2019")
-        RunningTimeList = ("54 m 21 s", "1 h 12 m 30 s", " 1 h 20 m 56 s", "30 m 48 s",
-                           "54 m 21 s", "1 h 12 m 30 s", " 1 h 20 m 56 s", "30 m 48 s")
+        lectureList = cloud.get_lectures(user.username)
 
         #GridLayout for organizing widgets
         layout = GridLayout(cols=1, spacing=20, size_hint_y=None)
@@ -141,17 +142,17 @@ class HomeWindow(Screen):
         
         #add information to GridLayout
         height_calc = 100 
-        for i in range(0,8):
+        for i in range(0,len(lectureList)):
             Title = tsButton()
             Date = Label()
             Length = Label()
-            Title.text = lectureList[i]
+            Title.text = lectureList[i][0]
             Title.font_size: (root.width**2 + root.height**2)
 
-            Date.text = dateList[i]
+            Date.text = lectureList[i][1]
             Date.font_size: (root.width**2 + root.height**2)
 
-            Length.text = RunningTimeList[i]
+            Length.text = lectureList[i][2]
             Length.font_size: (root.width**2 + root.height**2)
 
             temp = BoxLayout(size_hint = (1, None), orientation = "horizontal")
