@@ -208,6 +208,17 @@
                 app.root.current = "home"
                 root.manager.transition.direction = "right"
 
+        Button:
+        
+            pos_hint:{"right": 1, "top": 1}
+            size_hint:0.2,0.1
+            text: "keyword"
+            on_release:
+                root.manager.transition.direction = "left"	
+                root.keywordBtn()            
+                
+
+
 <SettingsWindow>:
     name: "settings"
 
@@ -254,3 +265,11 @@
                 root.manager.transition.direction = "down"
 
 
+
+
+	
+
+
+        
+
+	
