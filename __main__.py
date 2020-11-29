@@ -5,11 +5,17 @@ from kivy.properties import ObjectProperty
 from kivy.uix.label import Label
 from kivy.uix.popup import Popup
 from kivy.uix.screenmanager import ScreenManager, Screen
-from kivymd.uix.list import MDList, OneLineListItem
-from kivy.uix.scrollview import ScrollView
 from kivy.uix.button import Button
+from kivy.uix.behaviors import ButtonBehavior
+from kivy.core.window import Window
 from kivy.uix.accordion import Accordion, AccordionItem
+from kivy.uix.scrollview import ScrollView
+from kivy.uix.floatlayout import FloatLayout
+from kivy.uix.gridlayout import GridLayout
+from kivy.uix.boxlayout import BoxLayout
+
 import cloud
+import ll_keyword as KS
 
 
 class user:
@@ -25,9 +31,9 @@ class CreateAccountWindow(Screen):
     password = ObjectProperty(None)
 
     def submit(self):
-        if len(self.username.text) > 4 and len(self.username.text) <= 16:
+        if 4 < len(self.username.text) <= 16:
             if len(self.email.text) <= 320 and self.email.text.count("@") == 1 and self.email.text.count(".") > 0:
-                if len(self.password.text) > 4 and len(self.password.text) <= 16:
+                if 4 < len(self.password.text) <= 16:
                     if not cloud.add_user(self.username.text, self.email.text, self.password.text):
                         takenUsername()
                     self.reset()
@@ -55,7 +61,7 @@ class LoginWindow(Screen):
 
     def loginBtn(self):
         user.init(self.username.text)
-        if cloud.validate(user.username, self.password.text):
+        if cloud.validate(self.username.text, self.password.text):
             self.reset()
             sm.current = "home"
         else:
@@ -73,68 +79,187 @@ class LoginWindow(Screen):
 class HomeWindow(Screen):
     n = ObjectProperty(None)
     created = ObjectProperty(None)
-    username = ObjectProperty(None)
+    email = ObjectProperty(None)
     current = ""
+
+    def PrevLectureBtn(self):
+        # declear temporary screen for saving widgets
+        tempScreen = Screen()
+
+        # ScrollView to display lectures in scrollable form
+        scr = ScrollView(size_hint=(1, 0.9), size=(Window.width, Window.height))
+        scr.do_scroll_x = False
+        scr.do_scroll_y = True
+
+        # get list of lecture recordings (title, record date, running time)
+        lectureList = cloud.get_lectures(user.username)
+
+        # GridLayout for organizing widgets
+        layout = GridLayout(cols=1, spacing=20, size_hint_y=None)
+
+        # button to go to transcript
+        # change it when you get a way to access each transcript in database
+        class tsButton(Button):
+            def on_release(self):
+                tsScreen = Screen()
+
+                # add go-back button
+                class backButton(Button):
+                    def on_release(self):
+                        sm.current = "pl"
+                        sm.transition.direction = "right"
+                        sm.remove_widget(sm.get_screen("ts"))
+
+                tempBackBtn = backButton(text="Back", size_hint_y=None, height=40)
+                tempBackBtn.pos_hint = {"left": 0.2, "top": 1}
+                tempBackBtn.size_hint = (0.2, 0.1)
+                tsScreen.add_widget(tempBackBtn)
+
+                # add keyword button
+                tempKeywordBtn = keywordBtn(text="Keyword", size_hint_y=None, height=40)
+                tempKeywordBtn.pos_hint = {"right": 1, "top": 1}
+                tempKeywordBtn.size_hint = (0.2, 0.1)
+                tsScreen.add_widget(tempKeywordBtn)
+
+                # add transcript string
+                trscScr = ScrollView(size_hint=(1, 0.9), size=(Screen.width, Screen.height))
+                trscScr.do_scroll_x = True
+                trscScr.do_scroll_y = True
+                trscLabel = Label(text="this is temporary message1. this is temporary message2. " * 100)
+                trscLabel.size = sm.size
+                trscLabel.text_size = trscLabel.size
+                trscLabel.size_hint = (1, None)
+                temp.valign = 'center'
+                temp.halign = 'center'
+                trscScr.add_widget(trscLabel)
+                tsScreen.add_widget(trscScr)
+
+                # add screen to the manager
+                tsScreen.name = "ts"
+                sm.add_widget(tsScreen)
+                sm.transition.direction = "left"
+                sm.current = "ts"
+
+        # add information to GridLayout
+        height_calc = 100
+        for i in range(0, len(lectureList)):
+            Title = tsButton()
+            Date = Label()
+            Length = Label()
+            Title.text = lectureList[i][0]
+            Title.font_size: (root.width ** 2 + root.height ** 2)
+
+            Date.text = lectureList[i][1]
+            Date.font_size: (root.width ** 2 + root.height ** 2)
+
+            Length.text = lectureList[i][2]
+            Length.font_size: (root.width ** 2 + root.height ** 2)
+
+            temp = BoxLayout(size_hint=(1, None), orientation="horizontal")
+            temp.size_x = Window.width
+            temp.size_y = 50
+            temp.add_widget(Title)
+            temp.add_widget(Date)
+            temp.add_widget(Length)
+
+            layout.add_widget(temp)
+            height_calc += temp.height
+
+        # add GridLayout to the ScrollView
+        layout.height = height_calc
+        scr.add_widget(layout)
+
+        # add go-back button to the screen
+        class backButton(Button):
+            def on_release(self):
+                sm.current = "home"
+                sm.transition.direction = "right"
+                sm.remove_widget(sm.get_screen("pl"))
+
+        temp = backButton(text="back", size_hint_y=None, height=40)
+        temp.pos_hint = {"left": 0.2, "top": 1}
+        temp.size_hint = (0.2, 0.1)
+        tempScreen.add_widget(temp)
+
+        # add the screen to the manager
+        tempScreen.add_widget(scr)
+        tempScreen.name = "pl"
+        sm.add_widget(tempScreen)
+
+        # change current screen
+        sm.current = "pl"
 
     def logOut(self):
         sm.current = "login"
 
-    def lecturelist(self):
-        lectures = cloud.get_lectures(user.username)
-        screen = Screen()
-        scroll = ScrollView()
-        list_view = MDList()
-        scroll.add_widget(list_view)
-        for x in lectures:
-            items = OneLineListItem(text=x[0] + x[1] + x[2])
-            list_view.add_widget(items)
-        screen.add_widget(scroll)
-        return screen
-
-    # def lecturelist(self):
-    #     tempScreen = Screen()
-    #     lectures = cloud.get_lectures(user.username)
-    #
-    #     class backButton(Button):
-    #         def on_release(self):
-    #             sm.current = "ts"
-    #             sm.transition.direction = "right"
-    #
-    #     temp = backButton(text="back", size_hint_y=None, height=40)
-    #     temp.pos_hint = {"right": 0.2, "top": 1}
-    #     temp.size_hint = (0.2, 0.1)
-    #     tempScreen.add_widget(temp)
-    #
-    #     scr = ScrollView()
-    #     scr.do_scroll_x = False
-    #     acc = Accordion(orientation='vertical')
-    #     acc.min_space = 44
-    #     for i in range(0, len(lectures)):
-    #         word = lectures[i][0]
-    #         item = AccordionItem(title=word)
-    #         # temp = Label(text=lectures[i][0] + lectures[i][1] + lectures[i][2])
-    #         # temp.text_size = [600, 100]
-    #         # temp.valign = 'center'
-    #         # # temp.size_hint_y = None
-    #         # temp.height = temp.texture_size[1]
-    #         # item.add_widget(temp)
-    #         acc.add_widget(item)
-    #     scr.add_widget(acc)
-    #     tempScreen.add_widget(scr)
-    #
-    #     tempScreen.name = "keyword"
-    #     sm.add_widget(tempScreen)
-
 
 class LecList(Screen):
     n = ObjectProperty(None)
-    username = ObjectProperty(None)
+    created = ObjectProperty(None)
+    email = ObjectProperty(None)
     current = ""
 
 
-class Transcript(Screen):
-    n = ObjectProperty(None)
-    current = ""
+# keyword button for transcript page
+class keywordBtn(Button):
+    def on_release(self):
+        # declare temporary screen for saving widgets
+        tempScreen = Screen()
+
+        # initiate keyword search engine
+        KeywordSearch = KS.keyword()
+        KeywordSearch.openTranscript("sampleText.txt")
+        Keywords = KeywordSearch.getTopKeywords()
+
+        # button for going back
+        class backButton(Button):
+            def on_release(self):
+                sm.current = "ts"
+                sm.transition.direction = "right"
+                sm.remove_widget(sm.get_screen("keyword"))
+
+        # add button to the screen
+        temp = backButton(text="back", size_hint_y=None, height=40)
+        temp.pos_hint = {"right": 0.2, "top": 1}
+        temp.size_hint = (0.2, 0.1)
+        tempScreen.add_widget(temp)
+
+        # ScrollView to store keyword list in a scrollable form.
+        scr = ScrollView(size_hint=(1, 0.9), size=(Screen.width, Screen.height))
+        scr.do_scroll_x = False
+        scr.do_scroll_y = True
+
+        # Accordion to store keyword and definitions
+        acc = Accordion(orientation='vertical')
+        acc.size_hint = (1, None)
+        heightCal = 200
+
+        # add keywords to accordion
+        for i in range(0, len(Keywords)):
+            word = Keywords[i]
+            item = AccordionItem(title=word)
+
+            temporaryDef = KeywordSearch.searchWiki(word)
+            temp = Label(text=KeywordSearch.searchWiki(word))
+            temp.text_size = [600, 100]
+            temp.valign = 'center'
+            # temp.size_hint_y = None
+            temp.height = temp.texture_size[1]
+            item.add_widget(temp)
+            acc.add_widget(item)
+            heightCal += item.min_space
+
+        # add Accordion to the ScrollView
+        acc.height = heightCal
+        scr.add_widget(acc)
+        tempScreen.add_widget(scr)
+
+        # add screen to the manager
+        tempScreen.name = "keyword"
+        sm.add_widget(tempScreen)
+
+        # change current screen
+        sm.current = "keyword"
 
 
 class SettingsWindow(Screen):
@@ -189,7 +314,7 @@ kv = Builder.load_file("my.kv")
 sm = WindowManager()
 
 screens = [LoginWindow(name="login"), CreateAccountWindow(name="create"), HomeWindow(name="home")
-    , LecList(name="ll"), Transcript(name="ts"), SettingsWindow(name="settings")]
+    , LecList(name="ll"), SettingsWindow(name="settings")]  # ,Transcript(name="ts")
 for screen in screens:
     sm.add_widget(screen)
 
@@ -203,3 +328,64 @@ class MyMainApp(App):
 
 if __name__ == "__main__":
     MyMainApp().run()
+
+    """
+def keywordBtn(self):
+        #declear temporary screen for saving widgets
+        tempScreen = Screen()
+
+        #initiate keyword search engine
+        KeywordSearch = KS.keyword()
+        KeywordSearch.openTranscript("sampleText.txt")
+        Keywords = KeywordSearch.getTopKeywords()
+
+        #button for going back
+        class backButton(Button):
+            def on_release(self):
+                sm.current = "ts"
+                sm.transition.direction = "right"
+                sm.remove_widget(sm.get_screen("keyword"))
+
+        #add button to the screen
+        temp = backButton(text= "back", size_hint_y=None, height=40)
+        temp.pos_hint = {"right": 0.2, "top":1}
+        temp.size_hint = (0.2,0.1)
+        tempScreen.add_widget(temp)
+
+        #ScrollView to store keyword list in a scrollable form.
+        scr = ScrollView(size_hint=(1, 0.9), size=(Screen.width, Screen.height))
+        scr.do_scroll_x = False
+        scr.do_scroll_y = True
+
+        #Accordion to store keyword and definitions
+        acc = Accordion(orientation ='vertical')
+        acc.size_hint = (1, None)
+        heightCal = 200
+
+        #add keywords to accordion
+        for i in range(0, len(Keywords)):
+            word = Keywords[i]
+            item = AccordionItem(title= word)
+
+            temporaryDef = KeywordSearch.searchWiki(word)
+            temp = Label(text=KeywordSearch.searchWiki(word))
+            temp.text_size = [600,100]
+            temp.valign = 'center'
+                #temp.size_hint_y = None
+            temp.height = temp.texture_size[1]
+            item.add_widget(temp)
+            acc.add_widget(item)
+            heightCal += item.min_space
+
+        #add Accordion to the ScrollView    
+        acc.height = heightCal
+        scr.add_widget(acc)
+        tempScreen.add_widget(scr)
+        
+        #add screen to the manager
+        tempScreen.name = "keyword"
+        sm.add_widget(tempScreen)
+
+        #change current screen
+        sm.current = "keyword"
+        """
