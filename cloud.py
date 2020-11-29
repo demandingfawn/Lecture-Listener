@@ -108,6 +108,13 @@ def delete_timestamp(lecture_id):
 
     mydb.commit()
 
+def get_lectures(username):
+    sql = "SELECT date,course,length,lecture_id,audio,transcript FROM lecture WHERE username = '" + username + "'"
+    mycursor.execute(sql)
+    results = mycursor.fetchall()
+
+    mydb.commit()
+    return results
 
 def update_settings(username, font_size, font_type, font_color, background_color):
 

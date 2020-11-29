@@ -149,6 +149,7 @@
             size_hint:0.6,0.2
             text: "Transcripts"
             on_release:
+                root.lecturelist()
                 app.root.current = "ts"
                 root.manager.transition.direction = "left"
         Button:
@@ -194,7 +195,6 @@
                 
 <Transcript>:
     name: "ts"
-
 
     FloatLayout:
 
