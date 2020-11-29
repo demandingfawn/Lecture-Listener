@@ -16,6 +16,7 @@ from kivy.uix.boxlayout import BoxLayout
 
 import cloud
 import ll_keyword as KS
+from datetime import datetime
 
 
 class user:
@@ -82,8 +83,70 @@ class HomeWindow(Screen):
     email = ObjectProperty(None)
     current = ""
 
+    class LectureLength:
+        start = None
+
+        def SetStart():
+            now = datetime.now()
+            HomeWindow.LectureLength.start = now.time()
+
+        def CalcLength():
+            now = datetime.now()
+            hour = now.hour-HomeWindow.LectureLength.start.hour
+            minute = now.minute-HomeWindow.LectureLength.start.minute
+            second = now.second - HomeWindow.LectureLength.start.second
+            length = str(hour) + ":" + str(minute) + ":" + str(second)
+            print(length)
+            return length
+
+    def ListenLectureBtn(self):
+        # declare temporary screen for saving widgets
+        tempScreen = Screen()
+
+        # ScrollView to display lectures in scrollable form
+        scr = ScrollView(size_hint=(1, 0.9), size=(Window.width, Window.height))
+        scr.do_scroll_x = False
+        scr.do_scroll_y = True
+
+        # get list of lecture recordings (title, record date, running time)
+        lectureList = cloud.get_lectures(user.username)
+
+        # GridLayout for organizing widgets
+        layout = GridLayout(cols=1, spacing=20, size_hint_y=None)
+
+        # add information to GridLayout
+        height_calc = 100
+
+        # add GridLayout to the ScrollView
+        layout.height = height_calc
+        scr.add_widget(layout)
+
+        # add go-back button to the screen
+        class ExitButton(Button):
+            def on_release(self):
+                lecture_id = user.username + str(cloud.get_lecture_num(user.username) + 1)
+                date = datetime.today().strftime('%Y-%m-%d')
+                length = HomeWindow.LectureLength.CalcLength()
+                cloud.add_lecture(user.username,lecture_id,date,length,None,None,None)
+                sm.current = "home"
+                sm.transition.direction = "right"
+                sm.remove_widget(sm.get_screen("ll"))
+
+        temp = ExitButton(text="Exit", size_hint_y=None, height=40)
+        temp.pos_hint = {"left": 0.2, "top": 1}
+        temp.size_hint = (0.2, 0.1)
+        tempScreen.add_widget(temp)
+
+        # add the screen to the manager
+        tempScreen.add_widget(scr)
+        tempScreen.name = "ll"
+        sm.add_widget(tempScreen)
+
+        # change current screen
+        sm.current = "ll"
+
     def PrevLectureBtn(self):
-        # declear temporary screen for saving widgets
+        # declare temporary screen for saving widgets
         tempScreen = Screen()
 
         # ScrollView to display lectures in scrollable form
@@ -176,7 +239,7 @@ class HomeWindow(Screen):
                 sm.transition.direction = "right"
                 sm.remove_widget(sm.get_screen("pl"))
 
-        temp = backButton(text="back", size_hint_y=None, height=40)
+        temp = backButton(text="Back", size_hint_y=None, height=40)
         temp.pos_hint = {"left": 0.2, "top": 1}
         temp.size_hint = (0.2, 0.1)
         tempScreen.add_widget(temp)
@@ -314,7 +377,8 @@ kv = Builder.load_file("my.kv")
 sm = WindowManager()
 
 screens = [LoginWindow(name="login"), CreateAccountWindow(name="create"), HomeWindow(name="home")
-    , LecList(name="ll"), SettingsWindow(name="settings")]  # ,Transcript(name="ts")
+    , SettingsWindow(name="settings")]
+
 for screen in screens:
     sm.add_widget(screen)
 
