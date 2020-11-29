@@ -1,5 +1,5 @@
 import pyaudio
-
+import wave
 
 filename = "recorded.wav"
 chunk = 1024
@@ -23,6 +23,5 @@ p.terminate()
 wf = wave.open(filename, "wb")
 wf.setnchannels(channels)
 wf.setsampwidth(p.get_sample_size(FORMAT))
-wf.setframerate(sample_rate)
 wf.writeframes(b"".join(frames))
 wf.close()
