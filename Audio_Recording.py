@@ -1,5 +1,4 @@
 import pyaudio
-import wave
 
 
 filename = "recorded.wav"
@@ -13,8 +12,9 @@ stream = p.open(format=FORMAT,
                 output=True,
                 frames_per_buffer=chunk)
 frames = []
+recording = True
 print("Recording...")
-while True:
+while recording:
     data = stream.read(chunk)
     frames.append(data)
 stream.stop_stream()
