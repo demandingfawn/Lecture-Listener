@@ -17,7 +17,7 @@ from kivy.uix.boxlayout import BoxLayout
 import cloud
 import ll_keyword as KS
 from datetime import datetime
-
+import SpeechTrans as AR
 
 class user:
     username = None
@@ -270,6 +270,14 @@ class LecList(Screen):
     created = ObjectProperty(None)
     email = ObjectProperty(None)
     current = ""
+    def ListenBtn(self):
+
+        speechstart = AR.speech
+        speech = speechstart.speak(self)
+
+    def StopBtn(self):
+        speechstart = AR.speech
+        speech = speechstart.speak(self)
 
 
 # keyword button for transcript page
