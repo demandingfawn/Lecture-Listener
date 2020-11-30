@@ -112,50 +112,16 @@ def get_lecture_id(username):
     sql = "SELECT lecture_id FROM lecture WHERE username = '" + username + "'"
     mycursor.execute(sql)
     results = mycursor.fetchall()
-
     mydb.commit()
 
-    results.sort()
-    result = results[-1][0]
-    if result:
-        result = result[(len(username)):]
-    else:
+    if len(results) == 0:
         result = 0
+    else:
+        results.sort()
+        result = sorted(results)[-1][0]
+        result = result[(len(username)):]
     id = username + str(int(result) + 1)
     return id
-
-def get_afile(username):
-    sql = "SELECT audio FROM lecture WHERE username = '" + username + "'"
-    mycursor.execute(sql)
-    results = mycursor.fetchall()
-
-    mydb.commit()
-
-    results.sort()
-    result = results[-1][0]
-    if result:
-        result = result[(len(username)):]
-    else:
-        result = 0
-    filename = username + str(int(result) + 1)
-    return filename
-
-
-def get_tfile(username):
-    sql = "SELECT transcript FROM lecture WHERE username = '" + username + "'"
-    mycursor.execute(sql)
-    results = mycursor.fetchall()
-
-    mydb.commit()
-
-    results.sort()
-    result = results[-1][0]
-    if result:
-        result = result[(len(username)):]
-    else:
-        result = 0
-    filename = username + str(int(result) + 1)
-    return filename
 
 def get_lectures(username):
     sql = "SELECT date,course,length,lecture_id,audio,transcript FROM lecture WHERE username = '" + username + "'"

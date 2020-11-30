@@ -96,8 +96,15 @@ class HomeWindow(Screen):
             minute = now.minute-HomeWindow.LectureLength.start.minute
             second = now.second - HomeWindow.LectureLength.start.second
             length = str(hour) + ":" + str(minute) + ":" + str(second)
-            print(length)
             return length
+
+    def get_afile(lecture_id):
+        filename = lecture_id + "-a"
+        return filename
+
+    def get_tfile(lecture_id):
+        filename = lecture_id + "-t"
+        return filename
 
     def ListenLectureBtn(self):
         # declare temporary screen for saving widgets
@@ -127,8 +134,8 @@ class HomeWindow(Screen):
                 lecture_id = cloud.get_lecture_id(user.username)
                 date = datetime.today().strftime('%Y-%m-%d')
                 length = HomeWindow.LectureLength.CalcLength()
-                afile = cloud.get_afile(user.username)
-                tfile = cloud.get_tfile(user.username)
+                afile = HomeWindow.get_afile(lecture_id)
+                tfile = HomeWindow.get_tfile(lecture_id)
                 cloud.add_lecture(user.username,lecture_id,date,length,None,afile,tfile)
                 sm.current = "home"
                 sm.transition.direction = "right"
