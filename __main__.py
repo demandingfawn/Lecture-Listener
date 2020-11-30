@@ -169,16 +169,17 @@ class PrevLecWindow(Screen):
                 
                 #add transcript string
                 trscScr = ScrollView(size_hint=(1, 0.9), size=(Screen.width, Screen.height))
-                trscScr.do_scroll_x = True
+                trscScr.do_scroll_x = False
                 trscScr.do_scroll_y = True
                 f = open("lectures/" + str(self.txtName) + ".txt", 'r',encoding='utf-8')
                 trsc = f.read()
                 trscLabel = Label(text = trsc)
-                print("load lecture, length is : ", len(trsc))
 
-                #trscLabel.size = sm.size
-                trscLabel.text_size.height=30000
-                trscLabel.text_size.width = 1000
+                trscLabel.text_size = (600, None)
+                trscLabel.size_hint = (1,None)
+                
+                trscScr.add_widget(trscLabel)
+                tsScreen.add_widget(trscScr)
                 
                 #add keyword button
                 tempKeywordBtn = keywordBtn(text= "Keyword", size_hint_y=None, height=40)
