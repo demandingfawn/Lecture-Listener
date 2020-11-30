@@ -150,7 +150,7 @@
             text: "Previous Lecture"
             on_release:
                 root.manager.transition.direction = "left"
-                root.PrevLectureBtn()
+                app.root.current = "pl"
         Button:
 
             pos_hint:{"x": 0.2, "top":0.5}
@@ -168,7 +168,45 @@
                 app.root.current = "login"
                 root.manager.transition.direction = "down"
         
+<PrevLecWindow>:
+    name: "pl"
+    scr: scroll
+    layout: grid
 
+    Button:
+        pos_hint:{"left": 0.2, "top":1}
+        size_hint:0.2,0.1
+        text: "back"
+        on_release:
+            app.root.current = "home"
+            root.manager.transition.direction = "right"
+
+    Button:
+        pos_hint:{"right": 1, "top":1}
+        size_hint:0.2,0.1
+        text: "Add New Lecture"
+        on_release:
+            app.root.current = "al"
+            root.manager.transition.direction = "down"
+
+    ScrollView:
+        id: scroll
+        text: 'self.id'
+        do_scroll_x: False
+        do_scroll_y: True
+        size_hint_x: 1
+        size_hint_y: 0.9
+        size_x: root.width
+        size_y: root.height
+        GridLayout:
+            id: grid
+            text: 'self.id'
+            cols: 1
+            spacing: 20
+            size_hint_y: None
+    
+
+	
 
 <LecList>:
     name: "ll"
@@ -238,6 +276,73 @@
             on_release:
                 app.root.current = "home"
                 root.manager.transition.direction = "down"
+
+
+<AddLecWindow>:
+    name: "al"
+    course: course
+    audio: audio
+    transcript: transcript
+
+    FloatLayout:
+        cols:1
+
+        FloatLayout:
+            size: root.width, root.height/2
+
+            Label:
+                text: "Add new Lecture"
+                size_hint: 0.8, 0.2
+                pos_hint: {"x":0.1, "top":1}
+                font_size: (root.width**2 + root.height**2) / 14**4
+
+            Label:
+                size_hint: 0.5,0.12
+                pos_hint: {"x":0.1, "top":0.8}
+                text: "Course Name: "
+                font_size: (root.width**2 + root.height**2) / 14**4
+
+            TextInput:
+                pos_hint: {"x":0.5, "top":0.8}
+                size_hint: 0.4, 0.12
+                id: course
+                multiline: False
+                font_size: (root.width**2 + root.height**2) / 14**4
+
+            Label:
+                size_hint: 0.5,0.12
+                pos_hint: {"x":0.1, "top":0.8-0.13}
+                text: "Audio File Name: "
+                font_size: (root.width**2 + root.height**2) / 14**4
+
+            TextInput:
+                pos_hint: {"x":0.5, "top":0.8-0.13}
+                size_hint: 0.4, 0.12
+                id: audio
+                multiline: False
+                font_size: (root.width**2 + root.height**2) / 14**4
+
+            Label:
+                size_hint: 0.5,0.12
+                pos_hint: {"x":0.1, "top":0.8-0.13*2}
+                text: "Transcript File Name: "
+                font_size: (root.width**2 + root.height**2) / 14**4
+
+            TextInput:
+                pos_hint: {"x":0.5, "top":0.8-0.13*2}
+                size_hint: 0.4, 0.12
+                id: transcript
+                multiline: False
+                font_size: (root.width**2 + root.height**2) / 14**4
+
+        Button:
+            pos_hint:{"x":0.2,"y":0.05}
+            size_hint: 0.6, 0.15
+            text: "Submit"
+            font_size: (root.width**2 + root.height**2) / 14**4
+            on_release:
+                root.manager.transition.direction = "left"
+                root.addLecture()
 
 
 

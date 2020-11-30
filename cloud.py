@@ -73,17 +73,18 @@ def validate(username,password):
 
 def add_lecture(username,lecture_id,date,length,course,audio,transcript):
 
-    sql = "INSERT INTO users (user_id,lecture_id,date,length,course,audio,transcript) VALUES (%s,%s,%s,%s,%s,%s,%s)"
+    sql = "INSERT INTO lecture (username,lecture_id,date,length,course,audio,transcript) VALUES (%s,%s,%s,%s,%s,%s,%s)"
     val = (username,lecture_id,date,length,course,audio,transcript)
 
     mycursor.execute(sql, val)
 
     mydb.commit()
+    return val[5]
 
 
 def delete_lecture(username,lecture_id):
 
-    sql = "DELETE FROM lecture WHERE user_id = %s AND lecture_id = %s"
+    sql = "DELETE FROM lecture WHERE username = %s AND lecture_id = %s"
     val = (username,lecture_id)
 
     mycursor.execute(sql, val)
@@ -108,6 +109,57 @@ def delete_timestamp(lecture_id):
 
     mydb.commit()
 
+def get_lecture_id(username):
+    sql = "SELECT lecture_id FROM lecture WHERE username = '" + username + "'"
+    mycursor.execute(sql)
+    results = mycursor.fetchall()
+    if len(results) == 0:
+        id = username + str(0)
+        return id
+    mydb.commit()
+
+    results.sort()
+    result = results[-1][0]
+    if result:
+        result = result[(len(username)):]
+    else:
+        result = 0
+    id = username + str(int(result) + 1)
+    return id
+
+def get_afile(username):
+    sql = "SELECT audio FROM lecture WHERE username = '" + username + "'"
+    mycursor.execute(sql)
+    results = mycursor.fetchall()
+
+    mydb.commit()
+
+    results.sort()
+    result = results[-1][0]
+    if result:
+        result = result[(len(username)):]
+    else:
+        result = 0
+    filename = username + str(int(result) + 1)
+    return filename
+
+
+def get_tfile(username):
+    sql = "SELECT transcript FROM lecture WHERE username = '" + username + "'"
+    mycursor.execute(sql)
+    results = mycursor.fetchall()
+
+    mydb.commit()
+
+    results.sort()
+    result = results[-1][0]
+    if result:
+        result = result[(len(username)):]
+    else:
+        result = 0
+    filename = username + str(int(result) + 1)
+    return filename
+
 def get_lectures(username):
     sql = "SELECT date,course,length,lecture_id,audio,transcript FROM lecture WHERE username = '" + username + "'"
     mycursor.execute(sql)
@@ -119,19 +171,19 @@ def get_lectures(username):
 def update_settings(username, font_size, font_type, font_color, background_color):
 
     if (font_size != "NULL"):
-        sql = "UPDATE customers SET font_size = %s WHERE user_id = %s"
+        sql = "UPDATE customers SET font_size = %s WHERE username = %s"
         val = (font_size, username)
         mycursor.execute(sql, val)
     if (font_type != "NULL"):
-        sql = "UPDATE customers SET font_type = %s WHERE user_id = %s"
+        sql = "UPDATE customers SET font_type = %s WHERE username = %s"
         val = (font_type, username)
         mycursor.execute(sql, val)
     if (font_color != "NULL"):
-        sql = "UPDATE customers SET font_color = %s WHERE user_id = %s"
+        sql = "UPDATE customers SET font_color = %s WHERE username = %s"
         val = (font_color, username)
         mycursor.execute(sql, val)
     if (background_color != "NULL"):
-        sql = "UPDATE customers SET background_color = %s WHERE user_id = %s"
+        sql = "UPDATE customers SET background_color = %s WHERE username = %s"
         val = (background_color, username)
         mycursor.execute(sql, val)
 
@@ -140,7 +192,7 @@ def update_settings(username, font_size, font_type, font_color, background_color
 
 def update_course(username,lecture_id,course):
 
-    sql = "UPDATE lectures SET course = %s WHERE user_id = %s AND lecture_id = %s"
+    sql = "UPDATE lectures SET course = %s WHERE username = %s AND lecture_id = %s"
     val = (course,username,lecture_id)
 
     mycursor.execute(sql, val)
