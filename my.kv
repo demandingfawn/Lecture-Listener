@@ -139,8 +139,8 @@
             size_hint:0.6,0.2
             text: "Listen to Lecture"
             on_release:
-                root.manager.transition.direction = "right"
-                root.LectureLength.SetStart()
+                root.manager.transition.direction = "left"
+                root.LectureLength.Set()
                 root.ListenLectureBtn()
         Button:
         
@@ -157,7 +157,7 @@
             text: "settings"
             on_release:
                 app.root.current = "settings"
-                root.manager.transition.direction = "up"
+                root.manager.transition.direction = "left"
         Button:
 
             pos_hint:{"x": 0.2, "top":0.3}
@@ -211,4 +211,4 @@
             text: "back"
             on_release:
                 app.root.current = "home"
-                root.manager.transition.direction = "down"
+                root.manager.transition.direction = "right"

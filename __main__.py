@@ -85,10 +85,23 @@ class HomeWindow(Screen):
 
     class LectureLength:
         start = None
+        formatted = None
 
-        def SetStart():
+        def Set():
             now = datetime.now()
             HomeWindow.LectureLength.start = now.time()
+            if now.hour>12 :
+                hour=now.hour-12
+                if now.minute < 10:
+                    HomeWindow.LectureLength.formatted = str(hour) + ":0" + str(now.minute) + " PM"
+                else:
+                    HomeWindow.LectureLength.formatted = str(hour) + ":" + str(now.minute) + " PM"
+            else:
+                hour=now.hour
+                if now.minute < 10:
+                    HomeWindow.LectureLength.formatted = str(hour) + ":0" + str(now.minute) + " AM"
+                else:
+                    HomeWindow.LectureLength.formatted = str(hour) + ":" + str(now.minute) + " PM"
 
         def CalcLength():
             now = datetime.now()
@@ -124,9 +137,10 @@ class HomeWindow(Screen):
         class ExitButton(Button):
             def on_release(self):
                 lecture_id = cloud.get_lecture_id(user.username)
-                date = datetime.today().strftime('%Y-%m-%d')
+                date = datetime.today().strftime('%m/%d/%Y')
                 length = HomeWindow.LectureLength.CalcLength()
-                cloud.add_lecture(user.username,lecture_id,date,length,None,lecture_id,lecture_id)
+                name = "Unnamed - " + HomeWindow.LectureLength.formatted
+                cloud.add_lecture(user.username,lecture_id,date,length,name,lecture_id,lecture_id)
                 sm.current = "home"
                 sm.transition.direction = "right"
                 sm.remove_widget(sm.get_screen("ll"))
