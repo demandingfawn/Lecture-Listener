@@ -10,11 +10,10 @@ mydb = mysql.connector.connect(
     database='Lecture_Listener'
 )
 
-mycursor = mydb.cursor(buffered=True)
+MyCursor = mydb.cursor(buffered=True)
 
 
 def upload_file(file_name, object_name=None):
-
     # If S3 object_name was not specified, use file_name
     if object_name is None:
         object_name = file_name
@@ -29,17 +28,15 @@ def upload_file(file_name, object_name=None):
     return True
 
 
-def download_file(object_name,file_name):
-
+def download_file(object_name, file_name):
     s3 = boto3.client('s3')
-    s3.download_file('lecturelistener',object_name,file_name)
+    s3.download_file('lecturelistener', object_name, file_name)
 
 
-def add_user(username,email,password):
-
-    sql = "SELECT * FROM user WHERE username = '"+username+"'"
-    mycursor.execute(sql)
-    results = mycursor.fetchone()
+def add_user(username, email, password):
+    sql = "SELECT * FROM user WHERE username = '" + username + "'"
+    MyCursor.execute(sql)
+    results = MyCursor.fetchone()
 
     if results:
 
@@ -47,20 +44,20 @@ def add_user(username,email,password):
 
     else:
 
-        sql = "INSERT INTO user (username,email,password,font_size,font_type,font_color,background_color) VALUES (%s,%s,%s,%s,%s,%s,%s)"
+        sql = "INSERT INTO user (username,email,password,font_size,font_type,font_color,background_color) " \
+              "VALUES (%s,%s,%s,%s,%s,%s,%s)"
         val = (username, email, password, "Medium", "Arial", "White", "Black")
-        mycursor.execute(sql, val)
+        MyCursor.execute(sql, val)
 
         mydb.commit()
 
         return 1
 
 
-def validate(username,password):
-
-    sql = "SELECT * FROM user WHERE username = '" +username+ "' AND password = '"+password+"'"
-    mycursor.execute(sql)
-    results = mycursor.fetchone()
+def validate(username, password):
+    sql = "SELECT * FROM user WHERE username = '" + username + "' AND password = '" + password + "'"
+    MyCursor.execute(sql)
+    results = MyCursor.fetchone()
 
     if results:
 
@@ -71,93 +68,95 @@ def validate(username,password):
         return 0
 
 
-def add_lecture(username,lecture_id,date,length,course,audio,transcript):
+def add_lecture(username, lecture_id, date, length, course, audio, transcript):
+    sql = "INSERT INTO lecture (username,lecture_id,date,length,course,audio,transcript) " \
+          "VALUES (%s,%s,%s,%s,%s,%s,%s)"
+    val = (username, lecture_id, date, length, course, audio, transcript)
 
-    sql = "INSERT INTO lecture (username,lecture_id,date,length,course,audio,transcript) VALUES (%s,%s,%s,%s,%s,%s,%s)"
-    val = (username,lecture_id,date,length,course,audio,transcript)
-
-    mycursor.execute(sql, val)
+    MyCursor.execute(sql, val)
 
     mydb.commit()
 
 
-def delete_lecture(username,lecture_id):
-
+def delete_lecture(username, lecture_id):
     sql = "DELETE FROM lecture WHERE username = %s AND lecture_id = %s"
-    val = (username,lecture_id)
+    val = (username, lecture_id)
 
-    mycursor.execute(sql, val)
+    MyCursor.execute(sql, val)
 
     mydb.commit()
 
 
-def add_timestamp(lecture_id,time):
-
+def add_timestamp(lecture_id, time):
     sql = "INSERT INTO users (lecture_id,time) VALUES (%s,%s)"
-    val = (lecture_id,time)
-    mycursor.execute(sql, val)
+    val = (lecture_id, time)
+    MyCursor.execute(sql, val)
 
     mydb.commit()
 
 
 def delete_timestamp(lecture_id):
-  
     sql = "DELETE FROM lecture WHERE lecture_id = %s"
-    val = (lecture_id)
-    mycursor.execute(sql, val)
+    val = lecture_id
+    MyCursor.execute(sql, val)
 
     mydb.commit()
+
 
 def get_lecture_id(username):
     sql = "SELECT lecture_id FROM lecture WHERE username = '" + username + "'"
-    mycursor.execute(sql)
-    results = mycursor.fetchall()
+    MyCursor.execute(sql)
+    results = MyCursor.fetchall()
     mydb.commit()
 
-    if len(results) == 0:
-        result = 0
+    if len(results) == 000000:
+        result = "0"
     else:
         results.sort()
-        result = sorted(results)[-1][0]
+        result = results[-1][0]
         result = result[(len(username)):]
-    id = username + str(int(result) + 1)
-    return id
+    result = str(int(result) + 1)
+    print(len(result))
+    while len(result) != 6:
+        result = "0" + result
+    lecture_id = username + result
+    return lecture_id
+
 
 def get_lectures(username):
     sql = "SELECT date,course,length,lecture_id,audio,transcript FROM lecture WHERE username = '" + username + "'"
-    mycursor.execute(sql)
-    results = mycursor.fetchall()
+    MyCursor.execute(sql)
+    results = MyCursor.fetchall()
 
     mydb.commit()
     return results
 
-def update_settings(username, font_size, font_type, font_color, background_color):
 
-    if (font_size != "NULL"):
+def update_settings(username, font_size, font_type, font_color, background_color):
+    if font_size != "NULL":
         sql = "UPDATE customers SET font_size = %s WHERE username = %s"
         val = (font_size, username)
-        mycursor.execute(sql, val)
-    if (font_type != "NULL"):
+        MyCursor.execute(sql, val)
+    if font_type != "NULL":
         sql = "UPDATE customers SET font_type = %s WHERE username = %s"
         val = (font_type, username)
-        mycursor.execute(sql, val)
-    if (font_color != "NULL"):
+        MyCursor.execute(sql, val)
+    if font_color != "NULL":
         sql = "UPDATE customers SET font_color = %s WHERE username = %s"
         val = (font_color, username)
-        mycursor.execute(sql, val)
-    if (background_color != "NULL"):
+        MyCursor.execute(sql, val)
+    if background_color != "NULL":
         sql = "UPDATE customers SET background_color = %s WHERE username = %s"
         val = (background_color, username)
-        mycursor.execute(sql, val)
+        MyCursor.execute(sql, val)
 
     mydb.commit()
 
 
-def update_course(username,lecture_id,course):
-
+def update_course(username, lecture_id, course):
     sql = "UPDATE lectures SET course = %s WHERE username = %s AND lecture_id = %s"
-    val = (course,username,lecture_id)
+    val = (course, username, lecture_id)
 
-    mycursor.execute(sql, val)
+    MyCursor.execute(sql, val)
 
     mydb.commit()

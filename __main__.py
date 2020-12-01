@@ -1,6 +1,7 @@
 # main.py
 from kivy.app import App
 from kivy.clock import mainthread
+from kivy.clock import Clock
 from kivy.lang import Builder
 from kivy.properties import ObjectProperty
 from kivy.properties import StringProperty
@@ -15,23 +16,19 @@ from kivy.uix.scrollview import ScrollView
 from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
-import speech_recognition as sr
+from datetime import datetime
 import time
 import cloud
 import ll_keyword as KS
-from datetime import datetime
 import SpeechTrans as ST
 import Audio_Recording as AR
-import threading
-
-r = sr.Recognizer()
-m = sr.Microphone()
 
 class user:
     username = None
 
     def init(username):
         user.username = username
+
 
 class CreateAccountWindow(Screen):
     username = ObjectProperty(None)
@@ -94,26 +91,28 @@ class HomeWindow(Screen):
         start = None
         formatted = None
 
+        @staticmethod
         def Set():
             now = datetime.now()
             HomeWindow.LectureLength.start = now.time()
-            if now.hour>12 :
-                hour=now.hour-12
+            if now.hour > 12:
+                hour = now.hour - 12
                 if now.minute < 10:
                     HomeWindow.LectureLength.formatted = str(hour) + ":0" + str(now.minute) + " PM"
                 else:
                     HomeWindow.LectureLength.formatted = str(hour) + ":" + str(now.minute) + " PM"
             else:
-                hour=now.hour
+                hour = now.hour
                 if now.minute < 10:
                     HomeWindow.LectureLength.formatted = str(hour) + ":0" + str(now.minute) + " AM"
                 else:
                     HomeWindow.LectureLength.formatted = str(hour) + ":" + str(now.minute) + " PM"
 
+        @staticmethod
         def CalcLength():
             now = datetime.now()
-            hour = now.hour-HomeWindow.LectureLength.start.hour
-            minute = now.minute-HomeWindow.LectureLength.start.minute
+            hour = now.hour - HomeWindow.LectureLength.start.hour
+            minute = now.minute - HomeWindow.LectureLength.start.minute
             second = now.second - HomeWindow.LectureLength.start.second
             length = str(hour) + ":" + str(minute) + ":" + str(second)
             return length
@@ -127,9 +126,6 @@ class HomeWindow(Screen):
         scr.do_scroll_x = False
         scr.do_scroll_y = True
 
-        # get list of lecture recordings (title, record date, running time)
-        lectureList = cloud.get_lectures(user.username)
-
         # GridLayout for organizing widgets
         layout = GridLayout(cols=1, spacing=20, size_hint_y=None)
 
@@ -140,53 +136,17 @@ class HomeWindow(Screen):
         layout.height = height_calc
         scr.add_widget(layout)
 
-        class StartButton(Button):
-            def on_release(Button):
-                # String Property to Hold output for publishing by Textinput
-                output = StringProperty('')
-
-                def record(self):
-                    # GUI Blocking Audio Capture
-                    with m as source:
-                        audio = r.listen(source)
-
-                    try:
-                        # recognize speech using Google Speech Recognition
-                        value = r.recognize_google(audio)
-                        self.output = "\"{}\"".format(value)
-
-                    except sr.UnknownValueError:
-                        self.output = ("Oops! Didn't catch that")
-
-                    except sr.RequestError as e:
-                        self.output = (
-                            "Uh oh! Couldn't request results from Google Speech Recognition service; {0}".format(e))
-
-
-        temp = StartButton(text="Start", size_hint_y=None, height=40)
-        temp.pos_hint = {"right": 0.4, "top": 1}
-        temp.size_hint = (0.2, 0.1)
-        tempScreen.add_widget(temp)
-
-
-        class StopButton(Button):
-            def StopButton(Button):
-                stop = threading.Event()
-
-
-        temp = StopButton(text="Stop", size_hint_y=None, height=40)
-        temp.pos_hint = {"right": 0.6, "top": 1}
-        temp.size_hint = (0.2, 0.1)
-        tempScreen.add_widget(temp)
-
         # add go-back button to the screen
         class ExitButton(Button):
             def on_release(self):
+                print(rr.output)
+                ar.run = False
+                rr.run = False
                 lecture_id = cloud.get_lecture_id(user.username)
                 date = datetime.today().strftime('%m/%d/%Y')
                 length = HomeWindow.LectureLength.CalcLength()
                 name = "Unnamed - " + HomeWindow.LectureLength.formatted
-                cloud.add_lecture(user.username,lecture_id,date,length,name,lecture_id,lecture_id)
+                cloud.add_lecture(user.username, lecture_id, date, length, name, lecture_id, lecture_id)
                 sm.current = "home"
                 sm.transition.direction = "right"
                 sm.remove_widget(sm.get_screen("ll"))
@@ -203,6 +163,9 @@ class HomeWindow(Screen):
 
         # change current screen
         sm.current = "ll"
+
+        rr = ST.Recording()
+        ar = AR.Audio()
 
     def PrevLectureBtn(self):
         # declare temporary screen for saving widgets
@@ -313,6 +276,7 @@ class HomeWindow(Screen):
 
     def logOut(self):
         sm.current = "login"
+
 
 # keyword button for transcript page
 class keywordBtn(Button):
@@ -427,80 +391,24 @@ kv = Builder.load_file("my.kv")
 
 sm = WindowManager()
 
-screens = [LoginWindow(name="login"), CreateAccountWindow(name="create"), HomeWindow(name="home")
-    , SettingsWindow(name="settings")]
+screens = [LoginWindow(name="login"), CreateAccountWindow(name="create"),
+           HomeWindow(name="home"), SettingsWindow(name="settings")]
 
 for screen in screens:
     sm.add_widget(screen)
 
-sm.current = "login"
+# sm.current = "login"
+sm.current = "home"
+user.username = "caseyroot"
 
 
 class MyMainApp(App):
     def build(self):
+        Window.size = (700, 500)
+        Window.top = 200
+        Window.left = 200
         return sm
 
 
 if __name__ == "__main__":
     MyMainApp().run()
-
-    """
-def keywordBtn(self):
-        #declear temporary screen for saving widgets
-        tempScreen = Screen()
-
-        #initiate keyword search engine
-        KeywordSearch = KS.keyword()
-        KeywordSearch.openTranscript("sampleText.txt")
-        Keywords = KeywordSearch.getTopKeywords()
-
-        #button for going back
-        class backButton(Button):
-            def on_release(self):
-                sm.current = "ts"
-                sm.transition.direction = "right"
-                sm.remove_widget(sm.get_screen("keyword"))
-
-        #add button to the screen
-        temp = backButton(text= "back", size_hint_y=None, height=40)
-        temp.pos_hint = {"right": 0.2, "top":1}
-        temp.size_hint = (0.2,0.1)
-        tempScreen.add_widget(temp)
-
-        #ScrollView to store keyword list in a scrollable form.
-        scr = ScrollView(size_hint=(1, 0.9), size=(Screen.width, Screen.height))
-        scr.do_scroll_x = False
-        scr.do_scroll_y = True
-
-        #Accordion to store keyword and definitions
-        acc = Accordion(orientation ='vertical')
-        acc.size_hint = (1, None)
-        heightCal = 200
-
-        #add keywords to accordion
-        for i in range(0, len(Keywords)):
-            word = Keywords[i]
-            item = AccordionItem(title= word)
-
-            temporaryDef = KeywordSearch.searchWiki(word)
-            temp = Label(text=KeywordSearch.searchWiki(word))
-            temp.text_size = [600,100]
-            temp.valign = 'center'
-                #temp.size_hint_y = None
-            temp.height = temp.texture_size[1]
-            item.add_widget(temp)
-            acc.add_widget(item)
-            heightCal += item.min_space
-
-        #add Accordion to the ScrollView    
-        acc.height = heightCal
-        scr.add_widget(acc)
-        tempScreen.add_widget(scr)
-        
-        #add screen to the manager
-        tempScreen.name = "keyword"
-        sm.add_widget(tempScreen)
-
-        #change current screen
-        sm.current = "keyword"
-        """

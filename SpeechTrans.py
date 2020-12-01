@@ -1,35 +1,32 @@
 import speech_recognition as sr
-import time
-
+from threading import Thread
 
 r = sr.Recognizer()
 m = sr.Microphone()
-t = time.time()
 
+class Recording:
+    run = True
+    output = []
 
-value = "Start"
-recording = bool
+    def __init__(self, interval=1):
+        self.interval = interval
+        thread = Thread(target=self.record)
+        thread.daemon = True
+        thread.start()
 
-
-class speech:
-    def speak(self):
-        try:
-            print("A moment of silence, please...")
-            with m as source: r.adjust_for_ambient_noise(source)
-            print("Set minimum energy threshold to {}".format(r.energy_threshold))
-            while recording:
-
-                f = open("TextFile.txt", "a")
-                print("Say something")
-                with m as source: audio = r.listen(source)
-
-
-                elasped_time = time.time()-t
+    def record(self):
+        while self.run:
+            # GUI Blocking Audio Capture
+            with m as source:
+                r.adjust_for_ambient_noise(source)
+                audio = r.listen(source)
+            try:
                 # recognize speech using Google Speech Recognition
                 value = r.recognize_google(audio)
-                def print_message(value):
-                    print("{}".format(value))
-                print_message(value)
-                f.write("{} ".format(value) + "{" + "{}".format(elasped_time) + "}\n")
-        except KeyboardInterrupt:
-            pass
+                Recording.output.append("\"{}\"".format(value))
+                print(value)
+            except sr.UnknownValueError:
+                Recording.output.append("Oops! Didn't catch that")
+            except sr.RequestError as e:
+                Recording.output.append(
+                    "Uh oh! Couldn't request results from Google Speech Recognition service; {0}".format(e))
