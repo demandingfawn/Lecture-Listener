@@ -238,45 +238,74 @@
     FloatLayout:
     
         Label:
-        
             text:"Font Size: "
             font_size: (root.width**2 + root.height**2) / 13**4
-            pos_hint: {"x":0.1, "top":0.8}
+            pos_hint: {"x":0.1, "top":0.85}
             size_hint: 0.35, 0.15
-
-        TextInput:
-        
-            id: email
-            font_size: (root.width**2 + root.height**2) / 13**4
-            multiline: False
-            pos_hint: {"x": 0.45 , "top":0.8}
+        Spinner:
+            id: font Size
             size_hint: 0.4, 0.15
+            size: 100, 44
+            pos_hint: {"x": .45, "top":0.85}
+            text: 'small'
+            values: 'small', 'medium', 'large'
+            on_value:
+
 
         Label:
-        
-            text:"Volume: "
+            text:"Font Type: "
             font_size: (root.width**2 + root.height**2) / 13**4
-            pos_hint: {"x":0.1, "top":0.6}
+            pos_hint: {"x":0.1, "top":0.65}
+            size_hint: 0.35, 0.15
+        Spinner:
+            id: font Type
+            size_hint: 0.4, 0.15
+            size: 100, 44
+            pos_hint: {"x": .45, "top":0.65}
+            text: 'Ariel'
+            values: 'Ariel', 'Times', 'Comic Sans'
+            on_value:
+
+
+        Label:
+            text:"Font Color: "
+            font_size: (root.width**2 + root.height**2) / 13**4
+            pos_hint: {"x":0.1, "top":0.45}
             size_hint: 0.35, 0.15
 
-        TextInput:
-        
-            id: password
-            font_size: (root.width**2 + root.height**2) / 13**4
-            multiline: False
-            password: True
-            pos_hint: {"x": 0.45, "top":0.6}
+        Spinner:
+            id: font Color
             size_hint: 0.4, 0.15
+            size: 100, 44
+            pos_hint: {"x": .45, "top":0.45}
+            text: 'small'
+            values: 'White', 'Black', 'Red'
+            on_value:
+
+        Label:
+
+            text:"Background: "
+            font_size: (root.width**2 + root.height**2) / 13**4
+            pos_hint: {"x":0.1, "top":0.25}
+            size_hint: 0.35, 0.15
+        Spinner:
+            id: BColor
+            size_hint: 0.4, 0.15
+            size: 100, 44
+            pos_hint: {"x": .45, "top":0.25}
+            text: 'Black'
+            values: 'Black', 'White', 'Red'
+            on_value:
 
         Button:
-        
+            rgba: 1, 0, 0, 1
             pos_hint:{"left": 0.2, "top":1}
             size_hint:0.2,0.1
             text: "back"
             on_release:
                 app.root.current = "home"
                 root.manager.transition.direction = "down"
-
+		
 
 <AddLecWindow>:
     name: "al"
