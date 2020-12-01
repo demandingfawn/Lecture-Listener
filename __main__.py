@@ -174,9 +174,13 @@ class PrevLecWindow(Screen):
                 f = open("lectures/" + str(self.txtName) + ".txt", 'r',encoding='utf-8')
                 trsc = f.read()
                 trscLabel = Label(text = trsc)
+                print(len(trsc))
 
                 trscLabel.text_size = (600, None)
                 trscLabel.size_hint = (1,None)
+                trscLabel.height = int((len(trsc)/4.5)) #height of widget in the ScrollView need to be longer than the height of ScrollView
+                trscLabel.valign = 'top'
+                trscLabel.halign = 'left'
                 
                 trscScr.add_widget(trscLabel)
                 tsScreen.add_widget(trscScr)
