@@ -17,7 +17,7 @@ class Audio():
         sample_format = pyaudio.paInt16  # 16 bits per sample
         channels = 1
         fs = 44100  # Record at 44100 samples per second
-        seconds = 5
+        seconds = 10800
         filename = "output.wav"
 
         p = pyaudio.PyAudio()  # Create an interface to PortAudio

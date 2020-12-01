@@ -1,3 +1,4 @@
-so I don't know if I want to tack on more time for the code to run /7.866985082626343/
-yeah that's that's that's that's what I've done but it's ignoring I don't know why yes /13.88853645324707/
-that variable /23.897276639938354/
+Okay so {18.718947172164917}
+why was it not working {23.26413059234619}
+I mean that's fine. Only problem is it's not going to stop and must have crashes which is very unfortunate audited crash {41.8248872756958}
+that's that's weird why did it do that {51.716084241867065}

@@ -277,7 +277,6 @@ class HomeWindow(Screen):
     def logOut(self):
         sm.current = "login"
 
-
 # keyword button for transcript page
 class keywordBtn(Button):
     def on_release(self):
