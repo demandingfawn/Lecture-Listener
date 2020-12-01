@@ -19,6 +19,7 @@ import ll_keyword as KS
 from datetime import datetime
 import SpeechTrans as AR
 
+
 class user:
     username = None
 
@@ -90,14 +91,14 @@ class HomeWindow(Screen):
         def Set():
             now = datetime.now()
             HomeWindow.LectureLength.start = now.time()
-            if now.hour>12 :
-                hour=now.hour-12
+            if now.hour > 12:
+                hour = now.hour - 12
                 if now.minute < 10:
                     HomeWindow.LectureLength.formatted = str(hour) + ":0" + str(now.minute) + " PM"
                 else:
                     HomeWindow.LectureLength.formatted = str(hour) + ":" + str(now.minute) + " PM"
             else:
-                hour=now.hour
+                hour = now.hour
                 if now.minute < 10:
                     HomeWindow.LectureLength.formatted = str(hour) + ":0" + str(now.minute) + " AM"
                 else:
@@ -105,8 +106,8 @@ class HomeWindow(Screen):
 
         def CalcLength():
             now = datetime.now()
-            hour = now.hour-HomeWindow.LectureLength.start.hour
-            minute = now.minute-HomeWindow.LectureLength.start.minute
+            hour = now.hour - HomeWindow.LectureLength.start.hour
+            minute = now.minute - HomeWindow.LectureLength.start.minute
             second = now.second - HomeWindow.LectureLength.start.second
             length = str(hour) + ":" + str(minute) + ":" + str(second)
             return length
@@ -140,7 +141,7 @@ class HomeWindow(Screen):
                 date = datetime.today().strftime('%m/%d/%Y')
                 length = HomeWindow.LectureLength.CalcLength()
                 name = "Unnamed - " + HomeWindow.LectureLength.formatted
-                cloud.add_lecture(user.username,lecture_id,date,length,name,lecture_id,lecture_id)
+                cloud.add_lecture(user.username, lecture_id, date, length, name, lecture_id, lecture_id)
                 sm.current = "home"
                 sm.transition.direction = "right"
                 sm.remove_widget(sm.get_screen("ll"))
@@ -274,8 +275,8 @@ class LecList(Screen):
     created = ObjectProperty(None)
     email = ObjectProperty(None)
     current = ""
-    def ListenBtn(self):
 
+    def ListenBtn(self):
         speechstart = AR.speech
         speech = speechstart.speak(self)
 
@@ -397,7 +398,7 @@ kv = Builder.load_file("my.kv")
 
 sm = WindowManager()
 
-screens = [LoginWindow(name="login"), CreateAccountWindow(name="create"), HomeWindow(name="home")
+screens = [LoginWindow(name="login"), CreateAccountWindow(name="create"), HomeWindow(name="home"), LecList(name="ll")
     , SettingsWindow(name="settings")]
 
 for screen in screens:
@@ -418,40 +419,33 @@ if __name__ == "__main__":
 def keywordBtn(self):
         #declear temporary screen for saving widgets
         tempScreen = Screen()
-
         #initiate keyword search engine
         KeywordSearch = KS.keyword()
         KeywordSearch.openTranscript("sampleText.txt")
         Keywords = KeywordSearch.getTopKeywords()
-
         #button for going back
         class backButton(Button):
             def on_release(self):
                 sm.current = "ts"
                 sm.transition.direction = "right"
                 sm.remove_widget(sm.get_screen("keyword"))
-
         #add button to the screen
         temp = backButton(text= "back", size_hint_y=None, height=40)
         temp.pos_hint = {"right": 0.2, "top":1}
         temp.size_hint = (0.2,0.1)
         tempScreen.add_widget(temp)
-
         #ScrollView to store keyword list in a scrollable form.
         scr = ScrollView(size_hint=(1, 0.9), size=(Screen.width, Screen.height))
         scr.do_scroll_x = False
         scr.do_scroll_y = True
-
         #Accordion to store keyword and definitions
         acc = Accordion(orientation ='vertical')
         acc.size_hint = (1, None)
         heightCal = 200
-
         #add keywords to accordion
         for i in range(0, len(Keywords)):
             word = Keywords[i]
             item = AccordionItem(title= word)
-
             temporaryDef = KeywordSearch.searchWiki(word)
             temp = Label(text=KeywordSearch.searchWiki(word))
             temp.text_size = [600,100]
@@ -461,16 +455,14 @@ def keywordBtn(self):
             item.add_widget(temp)
             acc.add_widget(item)
             heightCal += item.min_space
-
         #add Accordion to the ScrollView    
         acc.height = heightCal
         scr.add_widget(acc)
         tempScreen.add_widget(scr)
-        
+
         #add screen to the manager
         tempScreen.name = "keyword"
         sm.add_widget(tempScreen)
-
         #change current screen
         sm.current = "keyword"
         """
