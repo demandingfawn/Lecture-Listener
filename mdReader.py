@@ -3,8 +3,6 @@
 #like when a lecture have ID number '123456',
 #   the file .md file that linked to the lecture needs to be '123456.md'
 
-#you can get list of timestamps that are in seconds form (ex. 1h10m40s would be 4240 (seconds) in the stamp list)
-
 #To link timestamps to the transcript,
 #   you need to count number of timestamps places in the transcript
 #   and link timestamp into the place with same order
@@ -12,32 +10,64 @@
 
 # the sample timestamp list is also posted with name "123456.md"
 
+import os.path
+from os import path
+
 class mdReader:
-    
     def __init__(self):
         self.stampList = []
-
+        return
+    
+    def generateMD(self, string, lectureID):
+        if path.exists("lectures/" + str(lectureID) + ".md"):
+            print("timestamp file already exists!")
+            return ""
+        
+        f = open(("lectures/" + str(lectureID) + ".md"), 'w')
+        tempStr = ""
+        tempTime = ""
+        isStamp = False
+        indexCount = 0
+        for i in range(0, len(string)):
+            if string[i] == '}':
+                f.write(">" + str(indexCount) +"\n#" + tempTime + "\n")
+                isStamp = False
+                tempTime = ""
+                tempStr += ("{" + str(indexCount) + "}")
+                indexCount += 1
+                
+            elif isStamp:
+                tempTime += string[i]
+                
+            elif string[i] == '{':
+                isStamp = True
+                
+            
+            else:
+                tempStr += string[i]
+                
+        f.close()
+        return tempStr
 
     #read .md file and get all timestamps in the file
-    def readMD(self, address):
-        f = open(address,'r',encoding='utf-8')
+    def readMD(self, lectureID):
+        if path.exists("lectures/" + str(lectureID) + ".md") == False:
+            print("timestamp file does not exists!")
+            return
         
+        f = open("lectures/" + str(lectureID) + ".md",'r',encoding='utf-8')
         stampIndex = 0
         
         while True:
             string = f.readline()
+            print(string)
             if string == "":
                 break
             elif len(string) < 2:
                 print("syntax error!")
                 
             elif string[0] == '>':
-                temp = ""
-                
-                for i in range(1,len(string)):
-                    temp += string[i]
-                
-                if int(temp) != stampIndex:
+                if int(string[1:len(string)]) != stampIndex:
                     print("Stamp Index Error!")
                     break
                 else:
@@ -45,38 +75,10 @@ class mdReader:
                     continue
     
             elif string[0] == '#':
-                h = 0
-                m = 0
-                s = 0
-                temp = ""
-                for i in range(1,len(string)):
-                    
-                    if string[i] == 'h':
-                        h = int(temp)
-                        temp = ""
-                        continue
-
-                    elif string[i] == 'm':
-                        m = int(temp)
-                        temp = ""
-                        continue
-
-                    elif string[i] == 's':
-                        s = int(temp)
-                        temp = ""
-                        continue
-
-                    elif string[i] >= '0' and string[i] <= '9':
-                        temp += string[i]
-                        
-                    elif string[i] == '\n':
-                        continue
-
-                    else:
-                        print("Stamp Content Error! ", string[i])
-                tempTime = 0
-                tempTime = h * 3600 + m * 60 + s
+                tempTime = int(string[1:len(string)])
                 self.stampList.append(tempTime)
+                print(tempTime)
+                print(self.stampList)
                 continue
             
             else:
@@ -87,7 +89,10 @@ class mdReader:
         return self.stampList
 """
 temp = mdReader()
-temp.readMD("123456.md")
+string = temp.generateMD("this is test message 11.{7} this is test message 22.{312}", "aaaaa1")
+print(string)
 
+temp.readMD("aaaaa1")
 print(temp.getStamps())
 """
+
