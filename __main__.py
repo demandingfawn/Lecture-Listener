@@ -111,8 +111,6 @@ class HomeWindow(Screen):
         @staticmethod
         def CalcLength():
             now = datetime.now()
-            print(now)
-            print(HomeWindow.LectureLength.start)
             hour = now.hour - HomeWindow.LectureLength.start.hour
             minute = now.minute - HomeWindow.LectureLength.start.minute
             second = now.second - HomeWindow.LectureLength.start.second
@@ -141,10 +139,13 @@ class HomeWindow(Screen):
         # add go-back button to the screen
         class ExitButton(Button):
             def on_release(self):
-                print(rr.output)
+                lecture_id = cloud.get_lecture_id(user.username)
+
                 ar.run = False
                 rr.run = False
-                lecture_id = cloud.get_lecture_id(user.username)
+                cloud.upload_file("output.wav", lecture_id + ".wav")
+                cloud.upload_file("transcript.md", lecture_id + ".md")
+
                 date = datetime.today().strftime('%m/%d/%Y')
                 length = HomeWindow.LectureLength.CalcLength()
                 name = "Unnamed - " + HomeWindow.LectureLength.formatted

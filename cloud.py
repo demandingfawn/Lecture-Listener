@@ -13,7 +13,7 @@ mydb = mysql.connector.connect(
 MyCursor = mydb.cursor(buffered=True)
 
 
-def upload_file(file_name, object_name=None):
+def upload_file(file_name, object_name):
     # If S3 object_name was not specified, use file_name
     if object_name is None:
         object_name = file_name
@@ -116,7 +116,6 @@ def get_lecture_id(username):
         result = results[-1][0]
         result = result[(len(username)):]
     result = str(int(result) + 1)
-    print(len(result))
     while len(result) != 6:
         result = "0" + result
     lecture_id = username + result
