@@ -17,7 +17,10 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from datetime import datetime
-import os
+import time
+
+from kivy.uix.textinput import TextInput
+
 import cloud
 import ll_keyword as KS
 import SpeechTrans as ST
@@ -111,6 +114,8 @@ class HomeWindow(Screen):
         @staticmethod
         def CalcLength():
             now = datetime.now()
+            print(now)
+            print(HomeWindow.LectureLength.start)
             hour = now.hour - HomeWindow.LectureLength.start.hour
             minute = now.minute - HomeWindow.LectureLength.start.minute
             second = now.second - HomeWindow.LectureLength.start.second
@@ -128,26 +133,22 @@ class HomeWindow(Screen):
 
         # GridLayout for organizing widgets
         layout = GridLayout(cols=1, spacing=20, size_hint_y=None)
+        t = TextInput(font_size = 25, size_hint_y = None, height = 500)
 
         # add information to GridLayout
-        height_calc = 100
+        height_calc = 0
 
         # add GridLayout to the ScrollView
         layout.height = height_calc
         scr.add_widget(layout)
+        layout.add_widget(t)
 
         # add go-back button to the screen
         class ExitButton(Button):
             def on_release(self):
-                lecture_id = cloud.get_lecture_id(user.username)
-
                 ar.run = False
                 rr.run = False
-                cloud.upload_file("output.wav", lecture_id + ".wav")
-                os.remove("output.wav")
-                cloud.upload_file("transcript.md", lecture_id + ".md")
-                os.remove("transcript.md")
-
+                lecture_id = cloud.get_lecture_id(user.username)
                 date = datetime.today().strftime('%m/%d/%Y')
                 length = HomeWindow.LectureLength.CalcLength()
                 name = "Unnamed - " + HomeWindow.LectureLength.formatted
@@ -171,6 +172,7 @@ class HomeWindow(Screen):
 
         rr = ST.Recording()
         ar = AR.Audio()
+        t.insert_text("hello")
 
     def PrevLectureBtn(self):
         # declare temporary screen for saving widgets

@@ -1,3 +1,4 @@
+
 import speech_recognition as sr
 from threading import Thread
 from mdutils.mdutils import MdUtils
@@ -31,4 +32,3 @@ class Recording:
                 self.mdFile.write(
                     "Uh oh! Couldn't request results from Google Speech Recognition service; {0} ".format(e))
         self.mdFile.create_md_file()
-
