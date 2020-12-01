@@ -23,6 +23,7 @@ import ll_keyword as KS
 import time
 import os.path
 from os import path
+import mdReader as md
 
 class user:
     username = None
@@ -137,11 +138,17 @@ class PrevLecWindow(Screen):
         class tsButton(Button):
             txtName = ""
             audioName = ""
+            lectureID = ""
             def setName(self, name):
                 self.txtName = name
 
             def setAudio(self, name):
                 self.audioName = name
+                
+            def setLecture(self, ID):
+                self.lectureID = ID
+                
+                
             def on_release(self):
                 #first, check if transcript exists
                 print("file name: ",str(self.txtName))
@@ -191,7 +198,7 @@ class PrevLecWindow(Screen):
 
                 audioBtn = audioButton(text= "Play/[b]Pause[/b] audio file", size_hint_y=None, height=40, markup = True)
                 audioBtn.pos_hint = {"center_x": 0.5, "top":1}
-                audioBtn.size_hint = (0.1,0.05)
+                audioBtn.size_hint = (0.2,0.05)
                 audioBtn.load(self.audioName)
                 tsScreen.add_widget(audioBtn)
                 
@@ -225,28 +232,62 @@ class PrevLecWindow(Screen):
                 f = open("lectures/" + str(self.txtName) + ".txt", 'r',encoding='utf-8')
                 trsc = f.read()
 
+                print(self.lectureID)
+                stamps = md.mdReader()
+                stamps.readMD(self.lectureID)
+                stampList = stamps.getStamps()
+                print(stampList)
+
                 tsString = "[ref=0]"
                 tempWord = ''
                 placeCount = 1  #link this value later with list of timestamps
+                isStamp = False
+                stampNum = ""
                 for i in range(0, len(trsc)):       #we might need to change it as we decide a syntax (or where) to place timestamp.
-                    tsString += trsc[i]
-                    if tempWord == '.':
-                        if trsc[i] == '\n' or trsc[i] == ' ':
-                            tsString += ("[/ref][ref="+ str(placeCount)+ "]")
-                            placeCount +=1
+                    if trsc[i] == '}':
+                        print("adding: ", stampList[int(stampNum)])
+
+                        tsString += "[/ref][ref="+ str(stampList[int(stampNum)]) +  "]"
+                        isStamp = False
+                        stampNum = ""
+                        print(tsString)
+                        
+                    elif isStamp:
+                        stampNum += trsc[i]
+                        continue
+                    
+                    elif trsc[i] == '{':
+                        isStamp = True
+
+                    else:
+                        tsString += trsc[i]
+                        """
+                        if tempWord == '.':
+                            if trsc[i] == '\n' or trsc[i] == ' ':
+                                tsString += ("[/ref][ref="+ str(placeCount)+ "]")
+                                placeCount +=1
+                                tempWord = ""
+                        elif trsc[i] == '.':
+                            tempWord = '.'
+                        else: #reset tempWord
                             tempWord = ""
-                    elif trsc[i] == '.':
-                        tempWord = '.'
-                    else: #reset tempWord
-                        tempWord = ""
+                        """
                         
                 tsString += "[/ref]"
 
+                def go_to(time):
+                    audioBtn.sound.play()
+                    audioBtn.sound.seek(time)
+                    return
+                    
                     #@@@@@@@@@@@@@@@@@@@@@@@@@
                     #change this function to go-to-timestamp fucntion
                 def timestamp(instance, value):
+                    go_to(float(value))
+                    """
                     pop = Popup(content=Label(text="sentence number is: " + value), size_hint=(None, None), size=(400, 400))
                     pop.open()
+                    """
                     #@@@@@@@@@@@@@@@@@@@@@@@
 
                 trscLabel = Label(text = tsString, markup=True)
@@ -345,6 +386,7 @@ class PrevLecWindow(Screen):
             Title.font_size: (root.width**2 + root.height**2)
             Title.setName(str(lectureList[i][5]))
             Title.setAudio(str(lectureList[i][4]))
+            Title.setLecture(lectureList[i][3])
 
             Date.text = lectureList[i][0]
             Date.font_size: (root.width**2 + root.height**2)
