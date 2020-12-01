@@ -167,14 +167,47 @@ class PrevLecWindow(Screen):
                 tempBackBtn.size_hint = (0.2,0.1)
                 tsScreen.add_widget(tempBackBtn)
                 
-                #add transcript string
+                #ScrollView to display transcript
                 trscScr = ScrollView(size_hint=(1, 0.9), size=(Screen.width, Screen.height))
                 trscScr.do_scroll_x = False
                 trscScr.do_scroll_y = True
+                
+
+                #open transcript and check places for timestamp
+                
+                # [ref=<str>] ~some string here ~ [/ref]
+                #this is text markup that enable text crickable and linked to some function
+                #string in the beginning of the reference will be the parameter that passed to the function
+                #when this text is clicked, it call its event, 'on_ref_press()'
                 f = open("lectures/" + str(self.txtName) + ".txt", 'r',encoding='utf-8')
                 trsc = f.read()
-                trscLabel = Label(text = trsc)
-                print(len(trsc))
+
+                tsString = "[ref=0]"
+                tempWord = ''
+                placeCount = 1  #link this value later with list of timestamps
+                for i in range(0, len(trsc)):       #we might need to change it as we decide a syntax (or where) to place timestamp.
+                    tsString += trsc[i]
+                    if tempWord == '.':
+                        if trsc[i] == '\n' or trsc[i] == ' ':
+                            tsString += ("[/ref][ref="+ str(placeCount)+ "]")
+                            placeCount +=1
+                            tempWord = ""
+                    elif trsc[i] == '.':
+                        tempWord = '.'
+                    else: #reset tempWord
+                        tempWord = ""
+                        
+                tsString += "[/ref]"
+
+                    #@@@@@@@@@@@@@@@@@@@@@@@@@
+                    #change this function to go-to-timestamp fucntion
+                def timestamp(instance, value):
+                    pop = Popup(content=Label(text="sentence number is: " + value), size_hint=(None, None), size=(400, 400))
+                    pop.open()
+                    #@@@@@@@@@@@@@@@@@@@@@@@
+
+                trscLabel = Label(text = tsString, markup=True)
+                trscLabel.bind(on_ref_press=timestamp)
 
                 #trscLabel.size = sm.size
                 trscLabel.text_size = (600, None)
