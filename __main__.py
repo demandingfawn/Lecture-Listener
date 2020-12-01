@@ -85,23 +85,27 @@ class AddLecWindow(Screen):
     transcript = ObjectProperty(None)
 
     def addLecture(self):
+        #if course name is empty
         if self.course.text == "":
             pop = Popup(
                   content=Label(text='Please enter a course name.'),
                   size_hint=(None, None), size=(400, 400))
             pop.open()
-            
+        
+        #if audio file doesn't exists
         elif self.audio.text == "" or path.exists("lectures/" + str(self.audio.text) + ".mp3") == False:
             pop = Popup(content=Label(text='Please check if audio file exists in lecture folder'),
                   size_hint=(None, None), size=(400, 400))
             pop.open()
-            
+        
+        #if transcript file doesn't exists
         elif self.transcript.text == "" or path.exists("lectures/" + str(self.transcript.text) + ".txt") == False:
             pop = Popup(title='Username Not Available',
                   content=Label(text='Please check if transcript file exists in lecture folder'),
                   size_hint=(None, None), size=(400, 400))
             pop.open()
-            
+        
+        #when everything is valid
         else:
             print(str(self.audio.text))
             print(str(self.transcript.text))
