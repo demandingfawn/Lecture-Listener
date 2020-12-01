@@ -21,7 +21,8 @@ import time
 import os.path
 from os import path
 
-from mutagen.mp3 import MP3
+#install this module for checking length of mp3 file: "pip install mutagen"
+from mutagen.mp3 import MP3         
 
 class user:
     username = None
