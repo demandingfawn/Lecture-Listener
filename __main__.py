@@ -17,6 +17,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from datetime import datetime
+import time
 import os
 import cloud
 import ll_keyword as KS
@@ -140,7 +141,8 @@ class HomeWindow(Screen):
         class ExitButton(Button):
             def on_release(self):
                 lecture_id = cloud.get_lecture_id(user.username)
-
+                if not os.path.exists("output.wav"):
+                    time.sleep(3)
                 ar.run = False
                 rr.run = False
                 cloud.upload_file("output.wav", lecture_id + ".wav")
@@ -211,11 +213,15 @@ class HomeWindow(Screen):
                 tempKeywordBtn.size_hint = (0.2, 0.1)
                 tsScreen.add_widget(tempKeywordBtn)
 
+                print(self.id)
+                cloud.download_file(self.id + ".md", "download.md")
+                md = open('download.md', 'r')
+
                 # add transcript string
                 trscScr = ScrollView(size_hint=(1, 0.9), size=(Screen.width, Screen.height))
                 trscScr.do_scroll_x = True
                 trscScr.do_scroll_y = True
-                trscLabel = Label(text="this is temporary message1. this is temporary message2. " * 100)
+                trscLabel = Label(text=md.read())
                 trscLabel.size = sm.size
                 trscLabel.text_size = trscLabel.size
                 trscLabel.size_hint = (1, None)
@@ -233,14 +239,15 @@ class HomeWindow(Screen):
         # add information to GridLayout
         height_calc = 100
         for i in range(0, len(lectureList)):
-            Title = tsButton()
-            Date = Label()
+            Date = tsButton()
+            Name = Label()
             Length = Label()
-            Title.text = lectureList[i][0]
-            Title.font_size: (root.width ** 2 + root.height ** 2)
-
-            Date.text = lectureList[i][1]
+            Date.text = lectureList[i][0]
             Date.font_size: (root.width ** 2 + root.height ** 2)
+            Date.id = lectureList[i][3]
+
+            Name.text = lectureList[i][1]
+            Name.font_size: (root.width ** 2 + root.height ** 2)
 
             Length.text = lectureList[i][2]
             Length.font_size: (root.width ** 2 + root.height ** 2)
@@ -248,8 +255,8 @@ class HomeWindow(Screen):
             temp = BoxLayout(size_hint=(1, None), orientation="horizontal")
             temp.size_x = Window.width
             temp.size_y = 50
-            temp.add_widget(Title)
             temp.add_widget(Date)
+            temp.add_widget(Name)
             temp.add_widget(Length)
 
             layout.add_widget(temp)

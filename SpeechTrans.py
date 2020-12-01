@@ -5,9 +5,11 @@ from mdutils.mdutils import MdUtils
 r = sr.Recognizer()
 m = sr.Microphone()
 
+
 class Recording:
     run = True
     mdFile = MdUtils(file_name='transcript')
+    mdFile.create_md_file()
 
     def __init__(self, interval=1):
         self.interval = interval
@@ -31,4 +33,3 @@ class Recording:
                 self.mdFile.write(
                     "Uh oh! Couldn't request results from Google Speech Recognition service; {0} ".format(e))
         self.mdFile.create_md_file()
-

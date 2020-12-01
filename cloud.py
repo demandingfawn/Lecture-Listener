@@ -123,7 +123,7 @@ def get_lecture_id(username):
 
 
 def get_lectures(username):
-    sql = "SELECT date,course,length,lecture_id,audio,transcript FROM lecture WHERE username = '" + username + "'"
+    sql = "SELECT date,course,length,lecture_id FROM lecture WHERE username = '" + username + "'"
     MyCursor.execute(sql)
     results = MyCursor.fetchall()
 
