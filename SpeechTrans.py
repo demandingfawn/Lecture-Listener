@@ -5,25 +5,31 @@ import time
 r = sr.Recognizer()
 m = sr.Microphone()
 t = time.time()
-recording = True
 
-try:
-    print("A moment of silence, please...")
-    with m as source: r.adjust_for_ambient_noise(source)
-    print("Set minimum energy threshold to {}".format(r.energy_threshold))
-    while recording:
-        f = open("TextFile.txt", "a")
-        print("Say something")
-        with m as source: audio = r.listen(source)
+
+value = "Start"
+recording = bool
+
+
+class speech:
+    def speak(self):
         try:
-            elasped_time = time.time()-t
-            # recognize speech using Google Speech Recognition
-            value = r.recognize_google(audio)
-            print("{}".format(value))
-            f.write("{} ".format(value) + "{" + "{}".format(elasped_time) + "}\n")
+            print("A moment of silence, please...")
+            with m as source: r.adjust_for_ambient_noise(source)
+            print("Set minimum energy threshold to {}".format(r.energy_threshold))
+            while recording:
 
-        except sr.UnknownValueError:
-            print("Didn't catch that")
-            break
-except KeyboardInterrupt:
-    pass
+                f = open("TextFile.txt", "a")
+                print("Say something")
+                with m as source: audio = r.listen(source)
+
+
+                elasped_time = time.time()-t
+                # recognize speech using Google Speech Recognition
+                value = r.recognize_google(audio)
+                def print_message(value):
+                    print("{}".format(value))
+                print_message(value)
+                f.write("{} ".format(value) + "{" + "{}".format(elasped_time) + "}\n")
+        except KeyboardInterrupt:
+            pass
