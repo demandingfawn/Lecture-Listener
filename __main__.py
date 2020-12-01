@@ -15,14 +15,14 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 
+from kivy.core.audio import SoundLoader
+from kivy.core.audio import Sound
+
 import cloud
 import ll_keyword as KS
 import time
 import os.path
 from os import path
-
-#install this module for checking length of mp3 file: "pip install mutagen"
-from mutagen.mp3 import MP3         
 
 class user:
     username = None
@@ -92,7 +92,7 @@ class AddLecWindow(Screen):
                   size_hint=(None, None), size=(400, 400))
             pop.open()
             
-        elif self.audio.text == "" or path.exists("lectures/" + str(self.audio.text) + ".mp3") == False:
+        elif self.audio.text == "" or path.exists("lectures/" + str(self.audio.text) + ".wav") == False:
             pop = Popup(content=Label(text='Please check if audio file exists in lecture folder'),
                   size_hint=(None, None), size=(400, 400))
             pop.open()
@@ -104,11 +104,8 @@ class AddLecWindow(Screen):
             pop.open()
             
         else:
-            print(str(self.audio.text))
-            print(str(self.transcript.text))
             currentDate = time.strftime('%Y-%m-%d', time.localtime(time.time()))
-            mp3File = MP3("lectures/" + str(self.audio.text) + ".mp3")
-            length = mp3File.info.length
+            length = SoundLoader.load("lectures/" + str(self.audio.text) + ".wav").length
             h = int(length/3600)
             m = int((length - (3600 * h))/60)
             s = int((length - (3600 * h))%60)
@@ -139,8 +136,12 @@ class PrevLecWindow(Screen):
         #change it when you get a way to access each transcript in database
         class tsButton(Button):
             txtName = ""
+            audioName = ""
             def setName(self, name):
                 self.txtName = name
+
+            def setAudio(self, name):
+                self.audioName = name
             def on_release(self):
                 #first, check if transcript exists
                 print("file name: ",str(self.txtName))
@@ -154,19 +155,61 @@ class PrevLecWindow(Screen):
                     pop.open()
                     return
                 
+                if path.exists("lectures/" + str(self.audioName) + ".wav") == False:
+                    pop = Popup(title='Audio Not Available', #text_size = [600,100],
+                  size_hint=(None, None), size=(400, 400))
+                    cont = Label(text='Please check if audio file exists\nin lecture folder, or delete this lecture')
+                    cont.valign = 'center'
+                    cont.halign = 'center'
+                    pop.content = cont
+                    pop.open()
+                    return
+                
                 tsScreen = Screen()
 
+                #add audio file and button
+                class audioButton(Button):
+                    playtime = 0.0
+                    sound = Sound()
+                    def load(self, audio):
+                        self.sound = SoundLoader.load("lectures/" + str(audio) + ".wav")
+                        print("length: ", self.sound.length)
+                    def stopAudio(self):
+                        self.sound.stop()
+                    def on_release(self):
+                        if self.sound.state == 'stop':
+                            self.sound.play()
+                            print(self.playtime)
+                            self.sound.seek(self.playtime)
+                            self.text = text= "[b]Play[/b] /Pauseaudio file"
+                        else:
+                            print(self.sound.get_pos())
+                            self.playtime = self.sound.get_pos()
+                            print(self.playtime)
+                            self.sound.stop()
+                            self.text= "Play/[b]Pause[/b] audio file"
+
+                audioBtn = audioButton(text= "Play/[b]Pause[/b] audio file", size_hint_y=None, height=40, markup = True)
+                audioBtn.pos_hint = {"center_x": 0.5, "top":1}
+                audioBtn.size_hint = (0.1,0.05)
+                audioBtn.load(self.audioName)
+                tsScreen.add_widget(audioBtn)
+                
+                
                 #add go-back button
                 class backButton(Button):
                     def on_release(self):
                         sm.current = "pl"
                         sm.transition.direction = "right"
                         sm.remove_widget(sm.get_screen("ts"))
+                        audioBtn.stopAudio()    #stop audio when user go out from transcript
                 
                 tempBackBtn = backButton(text= "Back", size_hint_y=None, height=40)
                 tempBackBtn.pos_hint = {"left": 0.2, "top":1}
                 tempBackBtn.size_hint = (0.2,0.1)
                 tsScreen.add_widget(tempBackBtn)
+
+                
                 
                 #ScrollView to display transcript
                 trscScr = ScrollView(size_hint=(1, 0.9), size=(Screen.width, Screen.height))
@@ -175,7 +218,6 @@ class PrevLecWindow(Screen):
                 
 
                 #open transcript and check places for timestamp
-                
                 # [ref=<str>] ~some string here ~ [/ref]
                 #this is text markup that enable text crickable and linked to some function
                 #string in the beginning of the reference will be the parameter that passed to the function
@@ -302,6 +344,7 @@ class PrevLecWindow(Screen):
             Title.text = str(lectureList[i][1])
             Title.font_size: (root.width**2 + root.height**2)
             Title.setName(str(lectureList[i][5]))
+            Title.setAudio(str(lectureList[i][4]))
 
             Date.text = lectureList[i][0]
             Date.font_size: (root.width**2 + root.height**2)
