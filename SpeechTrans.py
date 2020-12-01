@@ -24,11 +24,11 @@ class Recording:
             try:
                 # recognize speech using Google Speech Recognition
                 value = r.recognize_google(audio)
-                self.mdFile.write("\"{}\"".format(value))
+                self.mdFile.write("\"{}\" ".format(value))
             except sr.UnknownValueError:
-                self.mdFile.write("Oops! Didn't catch that")
+                self.mdFile.write("Oops! Didn't catch that ")
             except sr.RequestError as e:
                 self.mdFile.write(
-                    "Uh oh! Couldn't request results from Google Speech Recognition service; {0}".format(e))
+                    "Uh oh! Couldn't request results from Google Speech Recognition service; {0} ".format(e))
         self.mdFile.create_md_file()
 

@@ -97,3 +97,4 @@ class Audio():
             merge.close()
             os.remove("output.wav")
             os.rename("tmp.wav", "output.wav")
+        os.remove("new.wav")

@@ -17,7 +17,7 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from datetime import datetime
-import time
+import os
 import cloud
 import ll_keyword as KS
 import SpeechTrans as ST
@@ -144,7 +144,9 @@ class HomeWindow(Screen):
                 ar.run = False
                 rr.run = False
                 cloud.upload_file("output.wav", lecture_id + ".wav")
+                os.remove("output.wav")
                 cloud.upload_file("transcript.md", lecture_id + ".md")
+                os.remove("transcript.md")
 
                 date = datetime.today().strftime('%m/%d/%Y')
                 length = HomeWindow.LectureLength.CalcLength()
