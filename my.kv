@@ -115,7 +115,6 @@
             font_size: (root.width**2 + root.height**2) / 13**4
             text: "Login"
             on_release:
-
                 root.manager.transition.direction = "up"
                 root.loginBtn()
 
@@ -141,8 +140,9 @@
             size_hint:0.6,0.2
             text: "Listen to Lecture"
             on_release:
-                app.root.current = "ll"
                 root.manager.transition.direction = "right"
+                root.LectureLength.Set()
+                root.RecordLectureBtn()
         Button:
         
             pos_hint:{"x": 0.2, "top":0.7}

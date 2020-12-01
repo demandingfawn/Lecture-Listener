@@ -13,16 +13,17 @@ class Audio():
         thread.start()
 
     def record(self):
-        chunk = 1024  # Record in chunks of 1024 samples
-        sample_format = pyaudio.paInt16  # 16 bits per sample
-        channels = 1
-        fs = 44100  # Record at 44100 samples per second
-        seconds = 10800
-        filename = "output.wav"
-
-        p = pyaudio.PyAudio()  # Create an interface to PortAudio
 
         while self.run:
+
+            chunk = 1024  # Record in chunks of 1024 samples
+            sample_format = pyaudio.paInt16  # 16 bits per sample
+            channels = 1
+            fs = 44100  # Record at 44100 samples per second
+            seconds = 3
+            filename = "output.wav"
+
+            p = pyaudio.PyAudio()  # Create an interface to PortAudio
 
             print('Recording')
 
@@ -43,7 +44,6 @@ class Audio():
             stream.close()
             # Terminate the PortAudio interface
             p.terminate()
-
             print('Finished recording')
 
             # Save the recorded data as a WAV file

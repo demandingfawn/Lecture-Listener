@@ -111,6 +111,8 @@ class HomeWindow(Screen):
         @staticmethod
         def CalcLength():
             now = datetime.now()
+            print(now)
+            print(HomeWindow.LectureLength.start)
             hour = now.hour - HomeWindow.LectureLength.start.hour
             minute = now.minute - HomeWindow.LectureLength.start.minute
             second = now.second - HomeWindow.LectureLength.start.second
