@@ -99,7 +99,6 @@ def get_lecture_id(username):
         result = results[-1][0]
         result = result[(len(username)):]
     result = str(int(result) + 1)
-    print(len(result))
     while len(result) != 6:
         result = "0" + result
     lecture_id = username + result
