@@ -79,6 +79,7 @@ def add_lecture(username,lecture_id,date,length,course,audio,transcript):
     mycursor.execute(sql, val)
 
     mydb.commit()
+    return val[5]
 
 
 def delete_lecture(username,lecture_id):
@@ -112,16 +113,52 @@ def get_lecture_id(username):
     sql = "SELECT lecture_id FROM lecture WHERE username = '" + username + "'"
     mycursor.execute(sql)
     results = mycursor.fetchall()
+    if len(results) == 0:
+        id = username + str(0)
+        return id
     mydb.commit()
 
-    if len(results) == 0:
-        result = 0
-    else:
-        results.sort()
-        result = sorted(results)[-1][0]
+    results.sort()
+    result = results[-1][0]
+    if result:
         result = result[(len(username)):]
+    else:
+        result = 0
     id = username + str(int(result) + 1)
     return id
+
+def get_afile(username):
+    sql = "SELECT audio FROM lecture WHERE username = '" + username + "'"
+    mycursor.execute(sql)
+    results = mycursor.fetchall()
+
+    mydb.commit()
+
+    results.sort()
+    result = results[-1][0]
+    if result:
+        result = result[(len(username)):]
+    else:
+        result = 0
+    filename = username + str(int(result) + 1)
+    return filename
+
+
+def get_tfile(username):
+    sql = "SELECT transcript FROM lecture WHERE username = '" + username + "'"
+    mycursor.execute(sql)
+    results = mycursor.fetchall()
+
+    mydb.commit()
+
+    results.sort()
+    result = results[-1][0]
+    if result:
+        result = result[(len(username)):]
+    else:
+        result = 0
+    filename = username + str(int(result) + 1)
+    return filename
 
 def get_lectures(username):
     sql = "SELECT date,course,length,lecture_id,audio,transcript FROM lecture WHERE username = '" + username + "'"

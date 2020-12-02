@@ -1,34 +1,42 @@
 import speech_recognition as sr
-import time
-
+from threading import Thread
+from mdutils.mdutils import MdUtils
 
 r = sr.Recognizer()
 m = sr.Microphone()
-t = time.time()
+
+class Recording:
+    run = True
+    mdFile = MdUtils(file_name='transcript')
+    tempStr = ""
+
+    def __init__(self, interval=1):
+        self.interval = interval
+        thread = Thread(target=self.record)
+        thread.daemon = True
+        thread.start()
 
 
-recording = bool
+    def returnCaption():
+        return self.tempStr
 
-
-class speech:
-    def speak(self):
+    def record(self):
+        #while self.run:
+            # GUI Blocking Audio Capture
+        with sr.Microphone() as source:
+            r.adjust_for_ambient_noise(source)
+            audio = r.listen(source)
         try:
-            print("A moment of silence, please...")
-            with m as source: r.adjust_for_ambient_noise(source)
-            print("Set minimum energy threshold to {}".format(r.energy_threshold))
-            recording = True
-            while recording:
-
-                f = open("TextFile.txt", "a")
-                print("Say something")
-                with m as source: audio = r.listen(source)
-
-
-                elasped_time = time.time()-t
-                # recognize speech using Google Speech Recognition
-                value = r.recognize_google(audio)
-                print("{}".format(value))
-                f.write("{} ".format(value) + "{" + "{}".format(elasped_time) + "}\n")
-
-        except KeyboardInterrupt:
-            pass
+            # recognize speech using Google Speech Recognition
+            value = r.recognize_google(audio)
+            self.mdFile.write("\"{}\" ".format(value))
+            self.tempStr = value
+            print("result: ", value)
+        except sr.UnknownValueError:
+            self.mdFile.write("Oops! Didn't catch that ")
+            self.tempStr = ""
+        except sr.RequestError as e:
+            self.mdFile.write(
+                "Uh oh! Couldn't request results from Google Speech Recognition service; {0} ".format(e))
+            self.tempStr = ""
+        self.mdFile.create_md_file()
