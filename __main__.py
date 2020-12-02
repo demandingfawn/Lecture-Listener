@@ -20,11 +20,14 @@ from datetime import datetime
 import time
 
 from kivy.uix.textinput import TextInput
+from kivy.uix.label import Label
 
 import cloud
 import ll_keyword as KS
 import SpeechTrans as ST
 import Audio_Recording as AR
+
+import threading
 
 class user:
     username = None
@@ -132,22 +135,22 @@ class HomeWindow(Screen):
         scr.do_scroll_y = True
 
         # GridLayout for organizing widgets
-        layout = GridLayout(cols=1, spacing=20, size_hint_y=None)
-        t = TextInput(font_size = 25, size_hint_y = None, height = 500)
+        t = Label(font_size = 25, size_hint_y = None, height = 500)
+        t.halign = "center"
 
         # add information to GridLayout
         height_calc = 0
 
         # add GridLayout to the ScrollView
-        layout.height = height_calc
-        scr.add_widget(layout)
-        layout.add_widget(t)
+        scr.add_widget(t)
 
+        exitBool = True
         # add go-back button to the screen
         class ExitButton(Button):
             def on_release(self):
-                ar.run = False
+                #ar.run = False
                 rr.run = False
+                exitBool = False
                 lecture_id = cloud.get_lecture_id(user.username)
                 date = datetime.today().strftime('%m/%d/%Y')
                 length = HomeWindow.LectureLength.CalcLength()
@@ -172,7 +175,17 @@ class HomeWindow(Screen):
 
         rr = ST.Recording()
         ar = AR.Audio()
-        t.insert_text("hello")
+    
+        def producer():
+            while True:
+                print('Producer thread started ...')
+                rr.record()
+                temp = rr.tempStr
+                print("we got: ", temp)
+                if temp != "":
+                    t.text += temp + "\n"      
+        pd = threading.Thread(name='producer', target=producer)
+        pd.start()
 
     def PrevLectureBtn(self):
         # declare temporary screen for saving widgets
