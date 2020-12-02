@@ -267,9 +267,19 @@ class PrevLecWindow(Screen):
                         else:
                             tsString += trsc[i]
                 else:
-                    tsString += trsc
+                    for i in range(0, len(trsc)):       #we might need to change it as we decide a syntax (or where) to place timestamp.
+                        if trsc[i] == '}':
+                            isStamp = False
 
+                            
+                        elif isStamp:
+                            continue
                         
+                        elif trsc[i] == '{':
+                            isStamp = True
+
+                        else:
+                            tsString += trsc[i]
                 tsString += "[/ref]"
 
                 def go_to(time):
