@@ -5,6 +5,7 @@ from mdutils.mdutils import MdUtils
 r = sr.Recognizer()
 m = sr.Microphone()
 
+
 class Recording:
     run = True
     mdFile = MdUtils(file_name='transcript')
@@ -17,7 +18,8 @@ class Recording:
         thread.start()
 
 
-    def returnCaption():
+
+    def returnCaption(self):
         return self.tempStr
 
     def record(self):
@@ -32,10 +34,10 @@ class Recording:
             self.mdFile.write("\"{}\" ".format(value))
             self.tempStr = value
         except sr.UnknownValueError:
-            self.mdFile.write("Oops! Didn't catch that ")
+            self.mdFile.write("**Program Didn't Understand** ")
             self.tempStr = ""
         except sr.RequestError as e:
             self.mdFile.write(
-                "Uh oh! Couldn't request results from Google Speech Recognition service; {0} ".format(e))
+                "**Error: Couldn't request results from Google Speech Recognition service; {0}** ".format(e))
             self.tempStr = ""
         self.mdFile.create_md_file()

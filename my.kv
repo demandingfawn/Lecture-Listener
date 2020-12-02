@@ -130,7 +130,6 @@
     name: "home"
 
     FloatLayout:
-
         Button:
             pos_hint:{"x": 0.2, "top":0.9}
             size_hint:0.6,0.2
@@ -163,7 +162,7 @@
             on_release:
                 app.root.current = "login"
                 root.manager.transition.direction = "down"
-        
+
 <PrevLecWindow>:
     name: "pl"
     scr: scroll
@@ -200,7 +199,6 @@
             cols: 1
             spacing: 20
             size_hint_y: None
-
 
 <SettingsWindow>:
     name: "settings"

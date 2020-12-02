@@ -87,7 +87,7 @@ def add_timestamp(lecture_id,time):
 
 def delete_timestamp(lecture_id):
     sql = "DELETE FROM lecture WHERE lecture_id = %s"
-    val = (lecture_id)
+    val = lecture_id
     mycursor.execute(sql, val)
     mydb.commit()
 

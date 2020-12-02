@@ -36,9 +36,9 @@ class CreateAccountWindow(Screen):
     password = ObjectProperty(None)
 
     def submit(self):
-        if len(self.username.text) > 4 and len(self.username.text) <= 16:
+        if 4 < len(self.username.text) <= 16:
             if len(self.email.text) <= 320 and self.email.text.count("@") == 1 and self.email.text.count(".") > 0:
-                if len(self.password.text) > 4 and len(self.password.text) <= 16:
+                if 4 < len(self.password.text) <= 16:
                     if not cloud.add_user(self.username.text, self.email.text, self.password.text):
                         unavailable_username()
                     else:
@@ -498,12 +498,10 @@ class keywordBtn(Button):
     def on_release(self):
         # declear temporary screen for saving widgets
         tempScreen = Screen()
-
         # initiate keyword search engine
         KeywordSearch = KS.keyword()
         # KeywordSearch.openTranscript("sampleText.txt")
         KeywordSearch.inputTrscString(self.trsc)
-
         Keywords = KeywordSearch.getTopKeywords()
 
         # button for going back
@@ -606,8 +604,9 @@ def unavailable_username():
 kv = Builder.load_file("my.kv")
 sm = WindowManager()
 
-screens = [LoginWindow(name="login"), CreateAccountWindow(name="create"), HomeWindow(name="home")
-    , SettingsWindow(name="settings"), AddLecWindow(name="al"), PrevLecWindow(name="pl")]
+screens = [LoginWindow(name="login"), CreateAccountWindow(name="create"), HomeWindow(name="home"),
+           SettingsWindow(name="settings"), PrevLecWindow(name="pl")]
+
 for screen in screens:
     sm.add_widget(screen)
 
