@@ -133,10 +133,7 @@ class PrevLecWindow(Screen):
     #ScrollView to display lectures in scrollable form
     scr = ObjectProperty()
     
-    """
-    #declear temporary screen for saving widgets
-    tempScreen = Screen()
-    """
+
     def makeList(self):
         self.layout.clear_widgets()
         #button to go to transcript
@@ -267,17 +264,7 @@ class PrevLecWindow(Screen):
 
                     else:
                         tsString += trsc[i]
-                        """
-                        if tempWord == '.':
-                            if trsc[i] == '\n' or trsc[i] == ' ':
-                                tsString += ("[/ref][ref="+ str(placeCount)+ "]")
-                                placeCount +=1
-                                tempWord = ""
-                        elif trsc[i] == '.':
-                            tempWord = '.'
-                        else: #reset tempWord
-                            tempWord = ""
-                        """
+
                         
                 tsString += "[/ref]"
 
@@ -413,30 +400,7 @@ class PrevLecWindow(Screen):
     def on_pre_enter(self):
         #add GridLayout to the ScrollView
         self.makeList()
-        """
-        #add go-back button to the screen
-        class backButton(Button):
-            def on_release(self):
-                sm.current = "home"
-                sm.transition.direction = "right"
-                sm.remove_widget(sm.get_screen("pl"))
-        temp = backButton(text= "back", size_hint_y=None, height=40)
-        temp.pos_hint = {"left": 0.2, "top":1}
-        temp.size_hint = (0.2,0.1)
-        self.add_widget(temp)
 
-        #add button for adding new lecture file
-        class addBtn(Button):
-            def on_release(self):
-                sm.current = "al"
-                sm.transition.direction = "down"
-
-        temp = addBtn(text= "Add new Lecture", size_hint_y=None, height=40)
-        temp.pos_hint = {"right": 1, "top":1}
-        temp.size_hint = (0.2,0.1)
-        self.add_widget(temp)
-        """
-        
     
 
     #update lecture list whenever screen is about to be used
@@ -539,10 +503,8 @@ class HomeWindow(Screen):
     
         def producer():
             while exitBool:
-                print('Producer thread started ...')
                 rr.record()
                 temp = rr.tempStr
-                print("we got: ", temp)
                 if temp != "":
                     t.text += temp + "\n"      
         pd = threading.Thread(name='producer', target=producer)

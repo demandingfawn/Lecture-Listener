@@ -31,7 +31,6 @@ class Recording:
             value = r.recognize_google(audio)
             self.mdFile.write("\"{}\" ".format(value))
             self.tempStr = value
-            print("result: ", value)
         except sr.UnknownValueError:
             self.mdFile.write("Oops! Didn't catch that ")
             self.tempStr = ""
