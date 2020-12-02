@@ -37,20 +37,14 @@ def add_user(username, email, password):
     sql = "SELECT * FROM user WHERE username = '" + username + "'"
     MyCursor.execute(sql)
     results = MyCursor.fetchone()
-
     if results:
-
         return 0
-
     else:
-
         sql = "INSERT INTO user (username,email,password,font_size,font_type,font_color,background_color) " \
               "VALUES (%s,%s,%s,%s,%s,%s,%s)"
         val = (username, email, password, "Medium", "Arial", "White", "Black")
         MyCursor.execute(sql, val)
-
         mydb.commit()
-
         return 1
 
 
@@ -58,32 +52,24 @@ def validate(username, password):
     sql = "SELECT * FROM user WHERE username = '" + username + "' AND password = '" + password + "'"
     MyCursor.execute(sql)
     results = MyCursor.fetchone()
-
     if results:
-
         return 1
-
     else:
-
         return 0
 
 
-def add_lecture(username, lecture_id, date, length, course, audio, transcript):
-    sql = "INSERT INTO lecture (username,lecture_id,date,length,course,audio,transcript) " \
-          "VALUES (%s,%s,%s,%s,%s,%s,%s)"
-    val = (username, lecture_id, date, length, course, audio, transcript)
-
+def add_lecture(username, lecture_id, date, length, course):
+    sql = "INSERT INTO lecture (username,lecture_id,date,length,course) " \
+          "VALUES (%s,%s,%s,%s,%s)"
+    val = (username, lecture_id, date, length, course)
     MyCursor.execute(sql, val)
-
     mydb.commit()
 
 
 def delete_lecture(username, lecture_id):
     sql = "DELETE FROM lecture WHERE username = %s AND lecture_id = %s"
     val = (username, lecture_id)
-
     MyCursor.execute(sql, val)
-
     mydb.commit()
 
 
@@ -91,7 +77,6 @@ def add_timestamp(lecture_id, time):
     sql = "INSERT INTO users (lecture_id,time) VALUES (%s,%s)"
     val = (lecture_id, time)
     MyCursor.execute(sql, val)
-
     mydb.commit()
 
 
@@ -99,7 +84,6 @@ def delete_timestamp(lecture_id):
     sql = "DELETE FROM lecture WHERE lecture_id = %s"
     val = lecture_id
     MyCursor.execute(sql, val)
-
     mydb.commit()
 
 
@@ -108,7 +92,6 @@ def get_lecture_id(username):
     MyCursor.execute(sql)
     results = MyCursor.fetchall()
     mydb.commit()
-
     if len(results) == 000000:
         result = "0"
     else:
@@ -127,7 +110,6 @@ def get_lectures(username):
     sql = "SELECT date,course,length,lecture_id FROM lecture WHERE username = '" + username + "'"
     MyCursor.execute(sql)
     results = MyCursor.fetchall()
-
     mydb.commit()
     return results
 
@@ -149,14 +131,11 @@ def update_settings(username, font_size, font_type, font_color, background_color
         sql = "UPDATE customers SET background_color = %s WHERE username = %s"
         val = (background_color, username)
         MyCursor.execute(sql, val)
-
     mydb.commit()
 
 
 def update_course(username, lecture_id, course):
     sql = "UPDATE lectures SET course = %s WHERE username = %s AND lecture_id = %s"
     val = (course, username, lecture_id)
-
     MyCursor.execute(sql, val)
-
     mydb.commit()

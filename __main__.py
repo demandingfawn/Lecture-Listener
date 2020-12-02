@@ -17,13 +17,13 @@ from kivy.uix.floatlayout import FloatLayout
 from kivy.uix.gridlayout import GridLayout
 from kivy.uix.boxlayout import BoxLayout
 from datetime import datetime
-from kivy.uix.textinput import TextInput
 import time
 import os
 import cloud
 import ll_keyword as KS
 import SpeechTrans as ST
 import Audio_Recording as AR
+
 
 class user:
     username = None
@@ -113,8 +113,6 @@ class HomeWindow(Screen):
         @staticmethod
         def CalcLength():
             now = datetime.now()
-            print(now)
-            print(HomeWindow.LectureLength.start)
             hour = now.hour - HomeWindow.LectureLength.start.hour
             minute = now.minute - HomeWindow.LectureLength.start.minute
             second = now.second - HomeWindow.LectureLength.start.second
@@ -132,31 +130,32 @@ class HomeWindow(Screen):
 
         # GridLayout for organizing widgets
         layout = GridLayout(cols=1, spacing=20, size_hint_y=None)
-        t = TextInput(font_size = 25, size_hint_y = None, height = 500)
 
         # add information to GridLayout
-        height_calc = 0
+        height_calc = 100
 
         # add GridLayout to the ScrollView
         layout.height = height_calc
         scr.add_widget(layout)
-        layout.add_widget(t)
 
         # add go-back button to the screen
         class ExitButton(Button):
             def on_release(self):
-
                 lecture_id = cloud.get_lecture_id(user.username)
                 if not os.path.exists("output.wav"):
-                    time.sleep(3)
-
+                    time.sleep(2)
                 ar.run = False
                 rr.run = False
-                lecture_id = cloud.get_lecture_id(user.username)
+                cloud.upload_file("output.wav", lecture_id + ".wav")
+                # os.remove("output.wav")
+                cloud.upload_file("transcript.md", lecture_id + ".md")
+                # os.remove("transcript.md")
+                cloud.upload_file("transcript.txt", lecture_id + ".txt")
+
                 date = datetime.today().strftime('%m/%d/%Y')
                 length = HomeWindow.LectureLength.CalcLength()
                 name = "Unnamed - " + HomeWindow.LectureLength.formatted
-                cloud.add_lecture(user.username, lecture_id, date, length, name, lecture_id, lecture_id)
+                cloud.add_lecture(user.username, lecture_id, date, length, name)
                 sm.current = "home"
                 sm.transition.direction = "right"
                 sm.remove_widget(sm.get_screen("ll"))
@@ -176,7 +175,6 @@ class HomeWindow(Screen):
 
         rr = ST.Recording()
         ar = AR.Audio()
-        t.insert_text("hello")
 
     def PrevLectureBtn(self):
         # declare temporary screen for saving widgets
@@ -222,15 +220,17 @@ class HomeWindow(Screen):
                 md = open('download.md', 'r')
 
                 # add transcript string
-                trscScr = ScrollView(size_hint=(1, 0.9), size=(Screen.width, Screen.height))
-                trscScr.do_scroll_x = True
+                trscScr = ScrollView()
+                trscScr.size =(self.width, (self.height)-0.1)
+                trscScr.size_hint_y = 0.9
+                # trscScr.do_scroll_x = True
                 trscScr.do_scroll_y = True
-                trscLabel = Label(text=md.read())
-                trscLabel.size = sm.size
-                trscLabel.text_size = trscLabel.size
+                # trscLabel = Label(text=md.read())
+                trscLabel = Label(text = "Test Text I hope this helps!" * 100)
                 trscLabel.size_hint = (1, None)
-                temp.valign = 'center'
-                temp.halign = 'center'
+                trscLabel.text_size = self.size
+                trscLabel.halign= 'left'
+                trscLabel.valign= 'middle'
                 trscScr.add_widget(trscLabel)
                 tsScreen.add_widget(trscScr)
 
@@ -292,6 +292,7 @@ class HomeWindow(Screen):
 
     def logOut(self):
         sm.current = "login"
+
 
 # keyword button for transcript page
 class keywordBtn(Button):
