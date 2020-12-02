@@ -295,8 +295,9 @@ class PrevLecWindow(Screen):
                 # this is text markup that enable text crickable and linked to some function
                 # string in the beginning of the reference will be the parameter that passed to the function
                 # when this text is clicked, it call its event, 'on_ref_press()'
-                f = open("lectures/" + str(self.txtName) + ".txt", 'r', encoding='utf-8')
-                trsc = f.read()
+                cloud.download_file(self.id + ".md", "download.md")
+                file = open('download.md', 'r', encoding='utf-8')
+                trsc = file.read()
 
                 print(self.lectureID)
                 stamps = md.mdReader()
