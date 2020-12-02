@@ -30,6 +30,7 @@ import Audio_Recording as AR
 import os.path
 from os import path
 import threading
+import mdReader as md
 
 class user:
     username = None
@@ -246,24 +247,27 @@ class PrevLecWindow(Screen):
                 placeCount = 1  #link this value later with list of timestamps
                 isStamp = False
                 stampNum = ""
-                for i in range(0, len(trsc)):       #we might need to change it as we decide a syntax (or where) to place timestamp.
-                    if trsc[i] == '}':
-                        print("adding: ", stampList[int(stampNum)])
+                if len(stampList) !=0 :
+                    for i in range(0, len(trsc)):       #we might need to change it as we decide a syntax (or where) to place timestamp.
+                        if trsc[i] == '}':
+                            print("adding: ", stampList[int(stampNum)])
 
-                        tsString += "[/ref][ref="+ str(stampList[int(stampNum)]) +  "]"
-                        isStamp = False
-                        stampNum = ""
-                        print(tsString)
+                            tsString += "[/ref][ref="+ str(stampList[int(stampNum)]) +  "]"
+                            isStamp = False
+                            stampNum = ""
+                            print(tsString)
+                            
+                        elif isStamp:
+                            stampNum += trsc[i]
+                            continue
                         
-                    elif isStamp:
-                        stampNum += trsc[i]
-                        continue
-                    
-                    elif trsc[i] == '{':
-                        isStamp = True
+                        elif trsc[i] == '{':
+                            isStamp = True
 
-                    else:
-                        tsString += trsc[i]
+                        else:
+                            tsString += trsc[i]
+                else:
+                    tsString += trsc
 
                         
                 tsString += "[/ref]"
