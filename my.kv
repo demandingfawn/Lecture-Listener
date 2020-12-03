@@ -135,14 +135,14 @@
             size_hint:0.6,0.2
             text: "Listen to Lecture"
             on_release:
-                root.manager.transition.direction = "right"
                 root.LectureLength.Set()
                 root.RecordLectureBtn()
+                root.manager.transition.direction = "right"
 
         Button:
             pos_hint:{"x": 0.2, "top":0.7}
             size_hint:0.6,0.2
-            text: "Previous Lecture"
+            text: "Previous Lectures"
             on_release:
                 root.manager.transition.direction = "left"
                 app.root.current = "pl"
@@ -150,7 +150,7 @@
         Button:
             pos_hint:{"x": 0.2, "top":0.5}
             size_hint:0.6,0.2
-            text: "settings"
+            text: "Settings"
             on_release:
                 app.root.current = "settings"
                 root.manager.transition.direction = "up"
@@ -171,18 +171,10 @@
     Button:
         pos_hint:{"left": 0.2, "top":1}
         size_hint:0.2,0.1
-        text: "back"
+        text: "Back"
         on_release:
             app.root.current = "home"
             root.manager.transition.direction = "right"
-
-    Button:
-        pos_hint:{"right": 1, "top":1}
-        size_hint:0.2,0.1
-        text: "Add New Lecture"
-        on_release:
-            app.root.current = "al"
-            root.manager.transition.direction = "down"
 
     ScrollView:
         id: scroll
@@ -246,7 +238,7 @@
             size_hint: 0.4, 0.15
             size: 100, 44
             pos_hint: {"x": .45, "top":0.45}
-            text: 'small'
+            text: 'White'
             values: 'White', 'Black', 'Red'
             on_value:
 
@@ -269,7 +261,7 @@
             rgba: 1, 0, 0, 1
             pos_hint:{"left": 0.2, "top":1}
             size_hint:0.2,0.1
-            text: "back"
+            text: "Back"
             on_release:
                 app.root.current = "home"
                 root.manager.transition.direction = "down"

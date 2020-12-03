@@ -115,8 +115,6 @@ class HomeWindow(Screen):
         @staticmethod
         def CalcLength():
             now = datetime.now()
-            print(now)
-            print(HomeWindow.LectureLength.start)
             hour = now.hour - HomeWindow.LectureLength.start.hour
             minute = now.minute - HomeWindow.LectureLength.start.minute
             second = now.second - HomeWindow.LectureLength.start.second
@@ -149,17 +147,20 @@ class HomeWindow(Screen):
             def on_release(self):
                 ar.run = False
                 rr.run = False
-                exitBool = False
+                pd.exitBool = False
                 lecture_id = cloud.get_lecture_id(user.username)
                 date = datetime.today().strftime('%m/%d/%Y')
                 length = HomeWindow.LectureLength.CalcLength()
                 name = "Unnamed - " + HomeWindow.LectureLength.formatted
                 cloud.add_lecture(user.username, lecture_id, date, length, name)
-                cloud.upload_file("output.wav", user.username + "/" + str(self.audio.text) + ".wav")
-                cloud.upload_file("transcript.md", user.username + "/" + str(self.transcript.text) + ".md")
                 sm.current = "home"
                 sm.transition.direction = "left"
                 sm.remove_widget(sm.get_screen("ll"))
+                while path.exists("audio_upload.wav") is False \
+                        and path.exists("transcript_upload.md.md") is False:
+                    time.sleep(0.5)
+                cloud.upload_file("audio_upload.wav", user.username + "/" + lecture_id + ".wav")
+                cloud.upload_file("transcript_upload.md", user.username + "/" + lecture_id + ".md")
 
         temp = ExitButton(text="Exit", size_hint_y=None, height=40)
         temp.pos_hint = {"left": 0.2, "top": 1}
@@ -205,30 +206,31 @@ class PrevLecWindow(Screen):
             txtName = ""
             audioName = ""
             lectureID = ""
-            
+
             def setName(self, name):
                 self.txtName = name
 
             def setAudio(self, name):
                 self.audioName = name
 
-            def setLecture(self, ID):
+            def set_lecture_id(self, ID):
                 self.lectureID = ID
 
             def on_release(self):
                 # first, check if transcript exists
-                print("file name: ", str(self.txtName))
-                if path.exists("lectures/" + str(self.txtName) + ".txt") == False:
+                if cloud.check_storage(user.username + "/" + self.lectureID + ".md") is False:
                     pop = Popup(title='Can\'t Find Transcript',  # text_size = [600,100],
                                 size_hint=(None, None), size=(400, 400))
                     # cont = Label(
-                    #     text='Please check if transcript file exists\nin lecture folder, or delete this lecture')
+                    #     text='Please check if transcript file exists\nin lecture folder,
+                    #       or delete this lecture')
                     # cont.valign = 'center'
                     # cont.halign = 'center'
                     # pop.content = cont
                     pop.open()
                     return
-
+                cloud.download_file(user.username + "/" + self.lectureID + ".md", "transcript_download.md")
+                cloud.download_file(user.username + "/" + self.lectureID + ".wav", "audio_download.wav")
                 tsScreen = Screen()
 
                 # add audio file and button
@@ -237,7 +239,7 @@ class PrevLecWindow(Screen):
                     sound = Sound()
 
                     def load(self, audio):
-                        self.sound = SoundLoader.load("lectures/" + str(audio) + ".wav")
+                        self.sound = SoundLoader.load("audio_download.wav")
                         print("length: ", self.sound.length)
 
                     def stopAudio(self):
@@ -248,13 +250,14 @@ class PrevLecWindow(Screen):
                             self.sound.play()
                             print(self.playtime)
                             self.sound.seek(self.playtime)
-                            self.text = text = "[b]Play[/b] /Pauseaudio file"
+                            self.text = text = "[b]Play[/b]/Pause audio file"
                         else:
-                            if path.exists("lectures/" + str(self.audioName) + ".wav") is False:
+                            if path.exists("audio_download.wav") is False:
                                 pop = Popup(title='Can\'t Find Audio',  # text_size = [600,100],
                                             size_hint=(None, None), size=(400, 400))
                                 # cont = Label(
-                                #     text='Please check if audio file exists\nin lecture folder, or delete this lecture')
+                                #     text='Please check if audio file exists\nin lecture folder, or delete '
+                                #          'this lecture')
                                 # cont.valign = 'center'
                                 # cont.halign = 'center'
                                 # pop.content = cont
@@ -266,7 +269,8 @@ class PrevLecWindow(Screen):
                             self.sound.stop()
                             self.text = "Play/[b]Pause[/b] audio file"
 
-                audioBtn = audioButton(text="Play/[b]Pause[/b] audio file", size_hint_y=None, height=40, markup=True)
+                audioBtn = audioButton(text="Play/[b]Pause[/b] audio file",
+                                       size_hint_y=None, height=40, markup=True)
                 audioBtn.pos_hint = {"center_x": 0.5, "top": 1}
                 audioBtn.size_hint = (0.2, 0.05)
                 audioBtn.load(self.audioName)
@@ -295,11 +299,9 @@ class PrevLecWindow(Screen):
                 # this is text markup that enable text crickable and linked to some function
                 # string in the beginning of the reference will be the parameter that passed to the function
                 # when this text is clicked, it call its event, 'on_ref_press()'
-                cloud.download_file(self.id + ".md", "download.md")
-                file = open('download.md', 'r', encoding='utf-8')
-                trsc = file.read()
 
-                print(self.lectureID)
+                file = open("transcript_download.md", 'r', encoding='utf-8')
+                trsc = file.read()
                 stamps = md.mdReader()
                 stamps.readMD(self.lectureID)
                 stampList = stamps.getStamps()
@@ -311,8 +313,8 @@ class PrevLecWindow(Screen):
                 isStamp = False
                 stampNum = ""
                 if len(stampList) != 0:
-                    for i in range(0, len(
-                            trsc)):  # we might need to change it as we decide a syntax (or where) to place timestamp.
+                    # we might need to change it as we decide a syntax (or where) to place timestamp.
+                    for i in range(0, len(trsc)):
                         if trsc[i] == '}':
                             print("adding: ", stampList[int(stampNum)])
 
@@ -331,8 +333,8 @@ class PrevLecWindow(Screen):
                         else:
                             tsString += trsc[i]
                 else:
-                    for i in range(0, len(
-                            trsc)):  # we might need to change it as we decide a syntax (or where) to place timestamp.
+                    # we might need to change it as we decide a syntax (or where) to place timestamp.
+                    for i in range(0, len(trsc)):
                         if trsc[i] == '}':
                             isStamp = False
 
@@ -358,7 +360,8 @@ class PrevLecWindow(Screen):
                 def timestamp(instance, value):
                     go_to(float(value))
                     """
-                    pop = Popup(content=Label(text="sentence number is: " + value), size_hint=(None, None), size=(400, 400))
+                    pop = Popup(content=Label(text="sentence number is: " + value), 
+                        size_hint=(None, None), size=(400, 400))
                     pop.open()
                     """
                     # @@@@@@@@@@@@@@@@@@@@@@@
@@ -369,8 +372,8 @@ class PrevLecWindow(Screen):
                 # trscLabel.size = sm.size
                 trscLabel.text_size = (600, None)
                 trscLabel.size_hint = (1, None)
-                trscLabel.height = int((len(
-                    trsc) / 4.5))  # height of widget in the ScrollView need to be longer than the height of ScrollView
+                # height of widget in the ScrollView need to be longer than the height of ScrollView
+                trscLabel.height = int((len(trsc) / 4.5))
                 trscLabel.valign = 'top'
                 trscLabel.halign = 'left'
 
@@ -395,8 +398,8 @@ class PrevLecWindow(Screen):
             lectureID = 0
             screenAttached = Screen()
 
-            def setLectureID(self, ID):
-                self.lectureID = ID
+            def set_lecture_id(self, lecture_id):
+                self.lecture_id = lecture_id
 
             def on_release(self):
                 pop = Popup(title='Checking delete',
@@ -406,36 +409,37 @@ class PrevLecWindow(Screen):
                     def on_release(self):
                         pop.dismiss()
 
-                Btn1 = cancleBtn(text="Cancle", size_hint_y=None, height=40)
+                Btn1 = cancleBtn(text="Cancel", size_hint_y=None, height=40)
 
                 class confirmBtn(Button):
-                    lecture = 0
-
-                    def setLecture(self, l):
-                        self.lecture = l
+                    # lecture_id = None
+                    #
+                    def set_lecture_id(self, lecture_id):
+                        self.lecture_id = lecture_id
 
                     def on_release(self):
-                        cloud.delete_lecture(user.username, self.lecture)
+                        cloud.delete_lecture(self.lecture_id)
+                        cloud.delete_file(user.username + "/" + self.lecture_id + ".wav")
+                        cloud.delete_file(user.username + "/" + self.lecture_id + ".md")
                         sm.get_screen("pl").makeList()
                         pop.dismiss()
 
                 Btn2 = confirmBtn(text="Delete", size_hint_y=None, height=40)
-                Btn2.setLecture(self.lectureID)
+                Btn2.set_lecture_id(self.lecture_id)
 
                 grid = GridLayout(cols=2, padding=10)
                 grid.add_widget(Btn1)
                 grid.add_widget(Btn2)
 
                 grid2 = GridLayout(cols=1, padding=10)
-                L = Label(text='Are you sure you want to delete it?.')
-                grid2.add_widget(L)
+                # L = Label(text='Are you sure you want to delete it?.')
+                grid2.add_widget(Label(text='Are you sure you want to delete it?'))
                 grid2.add_widget(grid)
 
                 pop.add_widget(grid2)
                 pop.open()
 
         # get list of lecture recordings (title, record date, running time)
-
         lectureList = cloud.get_lectures(user.username)
 
         # add information to GridLayout
@@ -449,17 +453,16 @@ class PrevLecWindow(Screen):
             Title = tsButton()
             Date = Label()
             Length = Label()
+
             Dbtn = delBtn(text="X")
-
-            Dbtn.setLectureID(lectureList[i][3])
-
+            Dbtn.set_lecture_id(lectureList[i][3])
             Dbtn.font_size: (root.width ** 2 + root.height ** 2)
 
             Title.text = str(lectureList[i][1])
             Title.font_size: (root.width ** 2 + root.height ** 2)
             Title.setName(str(lectureList[i][5]))
             Title.setAudio(str(lectureList[i][4]))
-            Title.setLecture(lectureList[i][3])
+            Title.set_lecture_id(lectureList[i][3])
 
             Date.text = lectureList[i][0]
             Date.font_size: (root.width ** 2 + root.height ** 2)
@@ -496,7 +499,7 @@ class keywordBtn(Button):
         len(self.trsc)
 
     def on_release(self):
-        # declear temporary screen for saving widgets
+        # declare temporary screen for saving widgets
         tempScreen = Screen()
         # initiate keyword search engine
         KeywordSearch = KS.keyword()
@@ -512,7 +515,7 @@ class keywordBtn(Button):
                 sm.remove_widget(sm.get_screen("keyword"))
 
         # add button to the screen
-        temp = backButton(text="back", size_hint_y=None, height=40)
+        temp = backButton(text="Back", size_hint_y=None, height=40)
         temp.pos_hint = {"right": 0.2, "top": 1}
         temp.size_hint = (0.2, 0.1)
         tempScreen.add_widget(temp)
@@ -581,7 +584,7 @@ def invalid_username():
 
 
 def invalid_email():
-    pop = Popup(title='Invalid Username',
+    pop = Popup(title='Invalid Email',
                 content=Label(text='Please enter a valid email.'),
                 size_hint=(None, None), size=(400, 400))
     pop.open()
@@ -589,7 +592,7 @@ def invalid_email():
 
 def invalid_password():
     pop = Popup(title='Invalid Password',
-                content=Label(text='A Username must be 5-16 characters.'),
+                content=Label(text='A Password must be 5-16 characters.'),
                 size_hint=(None, None), size=(400, 400))
     pop.open()
 
@@ -613,6 +616,7 @@ for screen in screens:
 # sm.current = "login"
 sm.current = "home"
 user.username = "caseyroot"
+
 
 class MyMainApp(App):
     def build(self):
