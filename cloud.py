@@ -1,14 +1,9 @@
-import mysql.connector
 import logging
 import boto3
+import aws_credentials
 from botocore.exceptions import ClientError
 
-mydb = mysql.connector.connect(
-    host="lecture-listener-database.ced4pprbqpl5.us-east-2.rds.amazonaws.com",
-    user="admin",
-    password="CS4366Group",
-    database='Lecture_Listener'
-)
+mydb = aws_credentials.mydb
 mycursor = mydb.cursor(buffered=True)
 
 

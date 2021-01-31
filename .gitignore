@@ -1,0 +1,8 @@
+audio_upload.wav
+audio_download.wav
+aws_credentials.py
+transcript_upload.md
+transcript_download.md
+.DS_Store
+__pycache__/
+.idea/
