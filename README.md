@@ -1,4 +1,4 @@
-![LL Logo](LLimage.jpg)
+![LL Logo](LLimage.jpg | width=100)
 # Lecture-Listener
 Github for Senior Capstone project Lecture Listener
 
