@@ -1,19 +1,8 @@
+./LLimage.jpg
 # Lecture-Listener
 Github for Senior Capstone project Lecture Listener
 
-https://www.lfd.uci.edu/~gohlke/pythonlibs/
+Lecture Listener is an application to provide live closed captions during lectures. These closed captions are then saved in audio recordings and transcripts to be listened to or viewed later.
 
 # TODO
-audio files need to be merged into one - Bryce & Nick
-
-time stamps need to be placed in the transcription - Bryce & Nick
-
-how can we link to an audio file - Bryce & Nick & Casey & Jaesong
-
-app setting need to be functional - Dabion
-
-keyword function needs to be implemented -Dabion & Jaeseong
-
-previous lecture page needs to be better -  Casey (& Dabion?)
-
-markdown file research and implementing time stamps using it - Casey and Jaeseong
+* Make it so the app can work without connection to AWS, but display warning popup that nothing will be saved.
